@@ -5,10 +5,10 @@ export default function EachItem({eachItem, toggleCompleted}) {
         toggleCompleted(eachItem.id);
     }
     return (
-        <tr>
+        <tr className={+(new Date(eachItem.due)) <= +(new Date())? 'overdue' : 'notDueYet'}>
             <td><input type='checkbox' checked={eachItem.completed} onChange={toggleCompletedClick} /></td>
             <td>{eachItem.name}</td>
-            <td className={+(new Date(eachItem.due)) <= +(new Date())? 'overdue' : 'notDueYet'}>{eachItem.due}</td>
+            <td>{eachItem.due}</td>
         </tr>
     )
 }
