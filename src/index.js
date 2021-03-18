@@ -6,6 +6,7 @@ import ToDoItems from './ToDoItems';
 import './index.css';
 
 const LOCAL_STORAGE_KEY = 'todoApp.todos';
+const tomrISO = new Date().toISOString().split('T')[0];
 
 function App() {
     const toDoInput = useRef();
@@ -64,7 +65,7 @@ function App() {
                 </tbody>  
             </table>
             <input type='text' placeholder='event name'ref={toDoInput} />
-            <input type="date" min="2000-01-02" ref={dueDateInput}/> <button onClick={handleAddItem}> Add </button>
+            <input type="date" min={tomrISO} ref={dueDateInput}/> <button onClick={handleAddItem}> Add </button>
             <hr></hr>
 
             <button onClick={handleClearItems}> Clear Selected Items </button>
