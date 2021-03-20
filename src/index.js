@@ -1,6 +1,8 @@
-import React, {useState, useRef, useEffect} from 'react';
+import React, {useState, useRef, useEffect, createRef} from 'react';
 import ReactDOM from 'react-dom';
 import { v4 as uuidv4 } from 'uuid'; 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSort, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons';
 
 import ToDoItems from './ToDoItems';
 import './index.css';
@@ -9,9 +11,14 @@ const LOCAL_STORAGE_KEY_DATA = 'todoApp.todos';
 
 const tomrISO = new Date().toISOString().split('T')[0];
 
+const preSortIcon = <FontAwesomeIcon icon={faSort} />
+const sortUpIcon = <FontAwesomeIcon icon={faSortUp} />
+const sortDownIcon = <FontAwesomeIcon icon={faSortDown} />
+
 function App() {
     const toDoInput = useRef();
     const dueDateInput = useRef();
+
     const [todos, setToDos] = useState([]);
     const [sortConfig, setSortConfig] = useState({});
 
@@ -24,6 +31,10 @@ function App() {
     useEffect(() => {
         localStorage.setItem(LOCAL_STORAGE_KEY_DATA, JSON.stringify(todos))
     },[todos]); // this effect only fires if the todos array changes
+
+    useEffect(() => {
+
+    })
 
     function handleAddItem(e) {
         const currentInput =  toDoInput.current.value;
@@ -48,7 +59,6 @@ function App() {
     function handleClearItems() {
         const currentTodos = [...todos];
         const toRemainItems = currentTodos.filter(eachCurrentTodo => !eachCurrentTodo.completed);
-        console.log(toRemainItems, 'toRemainItems')
         setToDos(toRemainItems);
     }
 
@@ -58,32 +68,37 @@ function App() {
         const currentTodos = [...todos];
         let direction;
 
-        if(!currentSort[colToSort]){
-            console.log(currentSort, currentSort[colToSort])
-            direction = 'asc';
-        }
-        else {
-            direction = currentSort[colToSort] === 'asc'? 'desc' : 'asc'; 
-        }
-        currentSort[colToSort] = direction;
-        setSortConfig(currentSort);
+        if(!colToSort) console.log('colToSort is NULL')
 
-        if(currentTodos) {
-            if(colToSort === 'date') {
-                currentTodos.sort((a,b) => {
-                    if(+(new Date(a.due)) < +(new Date(b.due))) return direction === 'asc'? -1 : 1;
-                    if(+(new Date(a.due)) > +(new Date(b.due))) return direction === 'asc'? 1 : -1;
-                    return 0;
-                });
+
+        if(colToSort){
+            if(!currentSort[colToSort]){
+                direction = 'asc';
             }
-            if(colToSort === 'task') {
-                currentTodos.sort((a,b) => {
-                    if(a.name > b.name) return direction === 'asc'? -1 : 1;
-                    if(a.name < b.name) return direction === 'asc'? 1 : -1;
-                    return 0;
-                });
+            else {
+                direction = currentSort[colToSort] === 'asc'? 'desc' : 'asc'; 
             }
-            setToDos(currentTodos);
+            currentSort[colToSort] = direction;
+            console.log(currentSort, 'sorted to set')
+            setSortConfig(currentSort);
+
+            if(currentTodos) {
+                if(colToSort === 'date') {
+                    currentTodos.sort((a,b) => {
+                        if(+(new Date(a.due)) < +(new Date(b.due))) return direction === 'asc'? -1 : 1;
+                        if(+(new Date(a.due)) > +(new Date(b.due))) return direction === 'asc'? 1 : -1;
+                        return 0;
+                    });
+                }
+                if(colToSort === 'task') {
+                    currentTodos.sort((a,b) => {
+                        if(a.name.toLowerCase() > b.name.toLowerCase()) return direction === 'asc'? -1 : 1;
+                        if(a.name.toLowerCase() < b.name.toLowerCase()) return direction === 'asc'? 1 : -1;
+                        return 0;
+                    });
+                }
+                setToDos(currentTodos);
+            }
         }
     }
     return(
@@ -96,11 +111,17 @@ function App() {
                             Completion
                         </th>
                         <th> 
-                            <button type="button" value='task' onClick={sortBy}>Task</button>
+                            <button type="button" value='task' onClick={sortBy}>
+                                Task 
+                                <i className="icon">{preSortIcon}</i>
+                            </button>
                         </th>
                         
                         <th>
-                            <button type="button" value='date' onClick={sortBy}>Due Date</button>
+                            <button type="button" value='date' onClick={sortBy}>
+                                Due Date
+                                <i className="icon">{preSortIcon}</i>
+                            </button>
                         </th>
                     </tr>
                 </thead>  
