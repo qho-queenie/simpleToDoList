@@ -15,6 +15,7 @@ const preSortIcon = <FontAwesomeIcon icon={faSort} />
 const sortUpIcon = <FontAwesomeIcon icon={faSortUp} />
 const sortDownIcon = <FontAwesomeIcon icon={faSortDown} />
 
+// KH: Use arrow function 
 function App() {
     const [todos, setToDos] = useState([]);
     const [sortConfig, setSortConfig] = useState({});
@@ -32,10 +33,13 @@ function App() {
         localStorage.setItem(LOCAL_STORAGE_KEY_DATA, JSON.stringify(todos))
     },[todos]); // this effect only fires if the todos array changes
 
+    // KH: Use arrow function
+    // const handleAddItem = () => {}
     function handleAddItem(e) {
         const currentInput =  toDoInput.current.value;
         const pickedDueDate = dueDateInput.current.value;
 
+        // KH: What happened if one of them is not set?
         if(currentInput && pickedDueDate) {
             setToDos(prevList => {
                 return [...prevList, { id:uuidv4(), name: currentInput, due: pickedDueDate, completed: false}]
@@ -60,6 +64,7 @@ function App() {
 
     function sortBy(e) {
         const colToSort = e.target.value;
+        // KH: you dont have to assign it again.
         const currentSort = sortConfig;
         const currentTodos = [...todos];
         let direction;
@@ -76,7 +81,17 @@ function App() {
             setSortConfig(currentSort);
 
             if(currentTodos) {
+                // KH: Instead of manually doing the sort here. You can create a "sortedTodoList" that sort the list on the fly. 
                 if(colToSort === 'date') {
+                    /*
+                        KH: try to avoid one liner. Its hard to read. Also you can simply substract the date to perform compare
+
+                        array.sort((a,b) => {
+                          // Turn your strings into dates, and then subtract them
+                          // to get a value that is either negative, positive, or zero.
+                          return new Date(b.date) - new Date(a.date);
+                        });
+                    */
                     currentTodos.sort((a,b) => {
                         if(+(new Date(a.due)) < +(new Date(b.due))) return direction === 'asc'? -1 : 1;
                         if(+(new Date(a.due)) > +(new Date(b.due))) return direction === 'asc'? 1 : -1;
@@ -104,6 +119,8 @@ function App() {
                             Completion
                         </th>
                         <th> 
+                            /* KH: instead of using value, why not just pass the value to onClick callback function? */
+                            /* onClick{() => sortBy('task')} */
                             <button type="button" value='task' onClick={sortBy}>
                                 Task 
                                 <i className="icon">{preSortIcon}</i>
