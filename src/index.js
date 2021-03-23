@@ -15,7 +15,7 @@ const preSortIcon = <FontAwesomeIcon icon={faSort} />
 const sortUpIcon = <FontAwesomeIcon icon={faSortUp} />
 const sortDownIcon = <FontAwesomeIcon icon={faSortDown} />
 
-function App() {
+const App = () => {
     const [todos, setToDos] = useState([]);
     const [sortConfig, setSortConfig] = useState({});
 
@@ -32,7 +32,7 @@ function App() {
         localStorage.setItem(LOCAL_STORAGE_KEY_DATA, JSON.stringify(todos))
     },[todos]); // this effect only fires if the todos array changes
 
-    function handleAddItem(e) {
+    const handleAddItem = () => {
         const currentInput =  toDoInput.current.value;
         const pickedDueDate = dueDateInput.current.value;
 
@@ -45,20 +45,20 @@ function App() {
         dueDateInput.current.value = null;
     }
 
-    function toggleCompleted(e) {
+    const toggleCompleted = e => {
         const currentTodos = [...todos];
         const toToggleItem = currentTodos.find(eachCurrentTodo => eachCurrentTodo.id === e);
         toToggleItem.completed = !toToggleItem.completed;
         setToDos(currentTodos);
     }
 
-    function handleClearItems() {
+    const handleClearItems = () => {
         const currentTodos = [...todos];
         const toRemainItems = currentTodos.filter(eachCurrentTodo => !eachCurrentTodo.completed);
         setToDos(toRemainItems);
     }
 
-    function sortBy(e) {
+    const sortBy = (e) => {
         const colToSort = e.target.value;
         const currentSort = sortConfig;
         const currentTodos = [...todos];

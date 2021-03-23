@@ -1,7 +1,7 @@
 import React from 'react'
 
 export default function EachItem({eachItem, toggleCompleted}) {
-    function toggleCompletedClick(){
+    const toggleCompletedClick = () => {
         toggleCompleted(eachItem.id);
     }
     return (
