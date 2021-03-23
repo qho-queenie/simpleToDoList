@@ -5,7 +5,7 @@ export default function ToDoItems({ todos, toggleCompleted }) {
     return (
         todos.map(eachItem => {
             return (
-                <EachItem key={eachItem.id} eachItem={eachItem} toggleCompleted={toggleCompleted} />
+                <EachItem key={eachItem.id} eachItem={eachItem} toggleCompleted={toggleCompleted}/>
             )
         })
     )

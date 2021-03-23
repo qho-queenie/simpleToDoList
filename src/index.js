@@ -1,4 +1,4 @@
-import React, {useState, useRef, useEffect, createRef} from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 import ReactDOM from 'react-dom';
 import { v4 as uuidv4 } from 'uuid'; 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -16,11 +16,11 @@ const sortUpIcon = <FontAwesomeIcon icon={faSortUp} />
 const sortDownIcon = <FontAwesomeIcon icon={faSortDown} />
 
 function App() {
-    const toDoInput = useRef();
-    const dueDateInput = useRef();
-
     const [todos, setToDos] = useState([]);
     const [sortConfig, setSortConfig] = useState({});
+
+    const toDoInput = useRef();
+    const dueDateInput = useRef();
 
     useEffect(() => {
         const storedTodos = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY_DATA));
@@ -31,10 +31,6 @@ function App() {
     useEffect(() => {
         localStorage.setItem(LOCAL_STORAGE_KEY_DATA, JSON.stringify(todos))
     },[todos]); // this effect only fires if the todos array changes
-
-    useEffect(() => {
-
-    })
 
     function handleAddItem(e) {
         const currentInput =  toDoInput.current.value;
@@ -68,9 +64,6 @@ function App() {
         const currentTodos = [...todos];
         let direction;
 
-        if(!colToSort) console.log('colToSort is NULL')
-
-
         if(colToSort){
             if(!currentSort[colToSort]){
                 direction = 'asc';
@@ -79,7 +72,7 @@ function App() {
                 direction = currentSort[colToSort] === 'asc'? 'desc' : 'asc'; 
             }
             currentSort[colToSort] = direction;
-            console.log(currentSort, 'sorted to set')
+
             setSortConfig(currentSort);
 
             if(currentTodos) {
