@@ -1,14 +1,16 @@
 import React from 'react'
 
-export default function EachItem({eachItem, toggleCompleted}) {
-    function toggleCompletedClick(){
-        toggleCompleted(eachItem.id);
-    }
+const Item = ({item, toggleCompleted}) => {
+    const { id, name, due: dueAt, completed } = item;
+    const classname = +(new Date(dueAt)) <= +(new Date()) ? 'overdue' : 'notDueYet';
+   
     return (
-        <tr className={+(new Date(eachItem.due)) <= +(new Date())? 'overdue' : 'notDueYet'}>
-            <td><input type='checkbox' checked={eachItem.completed} onChange={toggleCompletedClick} /></td>
-            <td>{eachItem.name}</td>
-            <td>{eachItem.due}</td>
+        <tr className={classname}>
+            <td><input type='checkbox' checked={completed} onChange={() => toggleCompleted(id)} /></td>
+            <td>{name}</td>
+            <td>{dueAt}</td>
         </tr>
     )
 }
+
+export default Item;
