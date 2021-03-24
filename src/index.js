@@ -29,17 +29,18 @@ const App = () => {
     // we only call this retrieving from localStorage once, because we only need to load from saved items when page first loads up, never again
 
     useEffect(() => {
-        localStorage.setItem(LOCAL_STORAGE_KEY_DATA, JSON.stringify(todos))
-    },[todos]); // this effect only fires if the todos array changes
+        localStorage.setItem(LOCAL_STORAGE_KEY_DATA, JSON.stringify(todos));
+    },[todos]); // this effect only fires if the todos array changes: which is toggle complete and remove tasks
 
     const handleAddItem = () => {
         const currentInput =  toDoInput.current.value;
         const pickedDueDate = dueDateInput.current.value;
+        const currentTodos = [...todos];
 
-        if(currentInput && pickedDueDate) {
-            setToDos(prevList => {
-                return [...prevList, { id:uuidv4(), name: currentInput, due: pickedDueDate, completed: false}]
-            })
+        if(currentInput && pickedDueDate){ // will implement validations in next step
+            setToDos([...currentTodos, { id:uuidv4(), name: currentInput, due: pickedDueDate, completed: false}]);
+            // just because we need to sort something, doesnt mean we are storing it as well
+            renderList();
         }
         toDoInput.current.value = null;
         dueDateInput.current.value = null;
@@ -58,41 +59,62 @@ const App = () => {
         setToDos(toRemainItems);
     }
 
-    const sortBy = (e) => {
-        const colToSort = e.target.value;
-        const currentSort = sortConfig;
-        const currentTodos = [...todos];
+    const toggleSort = (e) => { // we only edit the sortConfig here, nothing else
+        const colToSort = e;
         let direction;
+        let newSortConfig = {};
 
-        if(colToSort){
-            if(!currentSort[colToSort]){
-                direction = 'asc';
-            }
-            else {
-                direction = currentSort[colToSort] === 'asc'? 'desc' : 'asc'; 
-            }
-            currentSort[colToSort] = direction;
-
-            setSortConfig(currentSort);
-
-            if(currentTodos) {
-                if(colToSort === 'date') {
-                    currentTodos.sort((a,b) => {
-                        if(+(new Date(a.due)) < +(new Date(b.due))) return direction === 'asc'? -1 : 1;
-                        if(+(new Date(a.due)) > +(new Date(b.due))) return direction === 'asc'? 1 : -1;
-                        return 0;
-                    });
-                }
-                if(colToSort === 'task') {
-                    currentTodos.sort((a,b) => {
-                        if(a.name.toLowerCase() > b.name.toLowerCase()) return direction === 'asc'? -1 : 1;
-                        if(a.name.toLowerCase() < b.name.toLowerCase()) return direction === 'asc'? 1 : -1;
-                        return 0;
-                    });
-                }
-                setToDos(currentTodos);
-            }
+        // goal is to ony 1 key-value pair at any time, so the render action have only 1 thing to recognize even without a click trigger
+        // 1. if exists -->> flip it
+        // 2. if dont exists --> destroy everything in it, create this key
+        if(sortConfig[colToSort]){
+            direction = sortConfig[colToSort] === 'asc'? 'des' : 'asc';
         }
+        else{
+            direction = 'asc';
+        }
+        newSortConfig[colToSort] = direction;
+        setSortConfig(newSortConfig);
+    }
+
+    const renderList = () => { // or this can just be a simple render function, that checks for sort btw every time
+        const currentTodos = [...todos];
+        const currentSortConfig = Object.entries(sortConfig);
+        let colToSort = null;
+        let direction = null;
+        console.log('hi im rendering')
+        if(currentSortConfig.length) { // not sure if this is a good practice
+            colToSort = currentSortConfig[0][0];
+            direction = currentSortConfig[0][1];
+        }
+
+        if(currentTodos){
+            if(colToSort === 'date'){
+                if(direction === 'asc'){
+                    currentTodos.sort((a, b) => {
+                        return new Date(a.due) - new Date(b.due);
+                    })
+                }
+                else {
+                    currentTodos.sort((a, b) => {
+                        return new Date(b.due) - new Date(a.due);
+                    })
+                }
+            }
+            
+            if(colToSort === 'task'){
+                currentTodos.sort((a,b) => {
+                    if(a.name.toLowerCase() > b.name.toLowerCase()){
+                        return direction === 'asc'? -1 : 1;
+                    } 
+                    if(a.name.toLowerCase() < b.name.toLowerCase()){
+                        return direction === 'asc'? 1 : -1;
+                    } 
+                });
+            }
+            return currentTodos;
+        }
+        
     }
     return(
         <div>
@@ -104,14 +126,14 @@ const App = () => {
                             Completion
                         </th>
                         <th> 
-                            <button type="button" value='task' onClick={sortBy}>
+                            <button type="button" value='task' onClick = {() => toggleSort('task')}>
                                 Task 
                                 <i className="icon">{preSortIcon}</i>
                             </button>
                         </th>
                         
                         <th>
-                            <button type="button" value='date' onClick={sortBy}>
+                            <button type="button" value='date' onClick = {() => toggleSort('date')}>
                                 Due Date
                                 <i className="icon">{preSortIcon}</i>
                             </button>
@@ -120,7 +142,7 @@ const App = () => {
                 </thead>  
 
                 <tbody>  
-                    <ToDoItems todos={todos} toggleCompleted={toggleCompleted} />
+                    <ToDoItems todos={renderList()} toggleCompleted={toggleCompleted} />
                 </tbody>  
             </table>
             <input type='text' placeholder='event name'ref={toDoInput} />
