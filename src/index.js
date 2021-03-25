@@ -39,14 +39,12 @@ const App = () => {
 
         if(currentInput && pickedDueDate){ // will implement validations in next step
             setToDos([...currentTodos, { id:uuidv4(), name: currentInput, due: pickedDueDate, completed: false}]);
-            // just because we need to sort something, doesnt mean we are storing it as well
-            renderList();
         }
         toDoInput.current.value = null;
         dueDateInput.current.value = null;
     }
 
-    const toggleCompleted = e => {
+        const toggleCompleted = (e) => {
         const currentTodos = [...todos];
         const toToggleItem = currentTodos.find(eachCurrentTodo => eachCurrentTodo.id === e);
         toToggleItem.completed = !toToggleItem.completed;
@@ -79,11 +77,12 @@ const App = () => {
 
     const renderList = () => { // or this can just be a simple render function, that checks for sort btw every time
         const currentTodos = [...todos];
+        // not sure if this is a good practice t o use Object.entries here, but now there is always only 1 pair of key:value, this should be good functionally?
         const currentSortConfig = Object.entries(sortConfig);
         let colToSort = null;
         let direction = null;
-        console.log('hi im rendering')
-        if(currentSortConfig.length) { // not sure if this is a good practice
+
+        if(currentSortConfig.length) { 
             colToSort = currentSortConfig[0][0];
             direction = currentSortConfig[0][1];
         }
