@@ -24,98 +24,100 @@ const App = () => {
 
     useEffect(() => {
         const storedTodos = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY_DATA));
-        setToDos(storedTodos)
+        setToDos(storedTodos);
     }, []); // run and clean effect only once on mount and unmount, this effect doesnt depend on any props or state so it never re-runs
     // we only call this retrieving from localStorage once, because we only need to load from saved items when page first loads up, never again
 
     useEffect(() => {
         localStorage.setItem(LOCAL_STORAGE_KEY_DATA, JSON.stringify(todos));
-    },[todos]); // this effect only fires if the todos array changes: which is toggle complete and remove tasks
+    }, [todos]); // this effect only fires if the todos array changes: which is toggle complete and remove tasks
 
     const handleAddItem = () => {
-        const currentInput =  toDoInput.current.value;
+        const currentInput = toDoInput.current.value;
         const pickedDueDate = dueDateInput.current.value;
-        const currentTodos = [...todos];
 
-        if(currentInput && pickedDueDate){ // will implement validations in next step
-            setToDos([...currentTodos, { id:uuidv4(), name: currentInput, due: pickedDueDate, completed: false}]);
+        if (currentInput && pickedDueDate){ // will implement validations in next step
+            const newTodoItem = {
+                id: uuidv4(),
+                name: currentInput,
+                due: pickedDueDate,
+                completed: false
+            };
+
+            setToDos([...todos, newTodoItem]);
+            toDoInput.current.value = null;
+            dueDateInput.current.value = null;
         }
-        toDoInput.current.value = null;
-        dueDateInput.current.value = null;
     }
 
-        const toggleCompleted = (e) => {
-        const currentTodos = [...todos];
-        const toToggleItem = currentTodos.find(eachCurrentTodo => eachCurrentTodo.id === e);
+    const toggleCompleted = (taskID) => {
+        const toToggleItem = todos.find(({ id }) => id === taskID);
         toToggleItem.completed = !toToggleItem.completed;
-        setToDos(currentTodos);
+        setToDos([...todos]); // actually need to make a copy of todos, because we are editing todos in place ?
     }
 
     const handleClearItems = () => {
-        const currentTodos = [...todos];
-        const toRemainItems = currentTodos.filter(eachCurrentTodo => !eachCurrentTodo.completed);
+        const toRemainItems = todos.filter(({ completed }) => !completed);
         setToDos(toRemainItems);
     }
 
-    const toggleSort = (e) => { // we only edit the sortConfig here, nothing else
-        const colToSort = e;
+    const toggleSort = (columnToSort) => { // we only edit the sortConfig here, nothing else
         let direction;
-        let newSortConfig = {};
 
-        // goal is to ony 1 key-value pair at any time, so the render action have only 1 thing to recognize even without a click trigger
+        // goal is to ony 1 column's sorting config at any time, so the render action have only 1 thing to recognize even without a click trigger
         // 1. if exists -->> flip it
         // 2. if dont exists --> destroy everything in it, create this key
-        if(sortConfig[colToSort]){
-            direction = sortConfig[colToSort] === 'asc'? 'des' : 'asc';
-        }
-        else{
+        if (sortConfig['columnKey'] === columnToSort){  
+            direction = sortConfig['dirToSort'] === 'asc' ? 'des' : 'asc';
+        } else {
             direction = 'asc';
         }
-        newSortConfig[colToSort] = direction;
+
+        const newSortConfig = { 
+            columnKey: columnToSort,
+            dirToSort: direction
+         };
+
         setSortConfig(newSortConfig);
     }
 
-    const renderList = () => { // or this can just be a simple render function, that checks for sort btw every time
-        const currentTodos = [...todos];
-        // not sure if this is a good practice t o use Object.entries here, but now there is always only 1 pair of key:value, this should be good functionally?
-        const currentSortConfig = Object.entries(sortConfig);
-        let colToSort = null;
-        let direction = null;
-
-        if(currentSortConfig.length) { 
-            colToSort = currentSortConfig[0][0];
-            direction = currentSortConfig[0][1];
-        }
-
-        if(currentTodos){
-            if(colToSort === 'date'){
-                if(direction === 'asc'){
-                    currentTodos.sort((a, b) => {
-                        return new Date(a.due) - new Date(b.due);
-                    })
-                }
-                else {
-                    currentTodos.sort((a, b) => {
-                        return new Date(b.due) - new Date(a.due);
-                    })
-                }
-            }
-            
-            if(colToSort === 'task'){
-                currentTodos.sort((a,b) => {
-                    if(a.name.toLowerCase() > b.name.toLowerCase()){
-                        return direction === 'asc'? -1 : 1;
-                    } 
-                    if(a.name.toLowerCase() < b.name.toLowerCase()){
-                        return direction === 'asc'? 1 : -1;
-                    } 
-                });
-            }
-            return currentTodos;
-        }
+    const sortTodos = () => { // this can just be a simple render function, that checks for sort btw every time
+        if (sortConfig) { 
+            let colToSort = sortConfig['columnKey'];
+            let direction = sortConfig['dirToSort'];
         
+            if (todos){
+                if (colToSort === 'date'){
+                    if (direction === 'asc'){
+                        todos.sort((a, b) => {
+                            return new Date(a.due) - new Date(b.due);
+                        })
+                    } else {
+                        todos.sort((a, b) => {
+                            return new Date(b.due) - new Date(a.due);
+                        })
+                    }
+                }
+                
+                if (colToSort === 'task'){
+                    todos.sort((a, b) => {
+                        if (a.name.toLowerCase() > b.name.toLowerCase()){
+                            return direction === 'asc' ? -1 : 1;
+                        } 
+                        if (a.name.toLowerCase() < b.name.toLowerCase()){
+                            return direction === 'asc' ? 1 : -1;
+                        } 
+                    });
+                }
+            }  
+        }
+        return todos;
     }
-    return(
+
+    // does this count as storing the value instead of executing the function in props?
+    const sortedTodos = sortTodos(); 
+        
+    return (
         <div>
             <h1>A To Do List</h1>
             <table>
@@ -125,14 +127,14 @@ const App = () => {
                             Completion
                         </th>
                         <th> 
-                            <button type="button" value='task' onClick = {() => toggleSort('task')}>
+                            <button type="button" onClick = {() => toggleSort('task')}>
                                 Task 
                                 <i className="icon">{preSortIcon}</i>
                             </button>
                         </th>
                         
                         <th>
-                            <button type="button" value='date' onClick = {() => toggleSort('date')}>
+                            <button type="button" onClick = {() => toggleSort('date')}>
                                 Due Date
                                 <i className="icon">{preSortIcon}</i>
                             </button>
@@ -141,11 +143,11 @@ const App = () => {
                 </thead>  
 
                 <tbody>  
-                    <ToDoItems todos={renderList()} toggleCompleted={toggleCompleted} />
+                    <ToDoItems todos={sortedTodos} toggleCompleted={toggleCompleted} />
                 </tbody>  
             </table>
-            <input type='text' placeholder='event name'ref={toDoInput} />
-            <input type="date" min={tomrISO} ref={dueDateInput}/> <button onClick={handleAddItem}> Add </button>
+            <input type='text' placeholder='event name' ref={toDoInput} />
+            <input type="date" min={tomrISO} ref={dueDateInput} /> <button onClick={handleAddItem}> Add </button>
             <hr></hr>
             <button onClick={handleClearItems}> Clear Selected Items </button>
             <h3>Number of remaining to-do items: {todos.length}</h3>
