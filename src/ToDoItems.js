@@ -1,14 +1,14 @@
-import React from 'react'
-import EachItem from './EachItem';
+import React from 'react';
+import TaskItem from './TaskItem';
 
-export default function ToDoItems({ todos, toggleCompleted }) {
+const ToDoItems = ({ todos, toggleCompleted }) => {
     return (
-        todos.map(eachItem => {
+        todos.map(task => {
             return (
-                <EachItem key={eachItem.id} eachItem={eachItem} toggleCompleted={toggleCompleted}/>
+                <TaskItem key={task.id} task={task} toggleCompleted={toggleCompleted} />
             )
         })
     )
 }
 
-
+export default ToDoItems;
