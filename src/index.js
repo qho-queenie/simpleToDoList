@@ -53,7 +53,7 @@ const App = () => {
     const toggleCompleted = (taskID) => {
         const toToggleItem = todos.find(({ id }) => id === taskID);
         toToggleItem.completed = !toToggleItem.completed;
-        setToDos([...todos]); // actually need to make a copy of todos, because we are editing todos in place ?
+        setToDos([...todos]);
     }
 
     const handleClearItems = () => {
@@ -61,10 +61,9 @@ const App = () => {
         setToDos(toRemainItems);
     }
 
-    const toggleSort = (columnToSort) => { // we only edit the sortConfig here, nothing else
+    const toggleSort = (columnToSort) => {
         let direction;
 
-        // goal is to ony 1 column's sorting config at any time, so the render action have only 1 thing to recognize even without a click trigger
         // 1. if exists -->> flip it
         // 2. if dont exists --> destroy everything in it, create this key
         if (sortConfig['columnKey'] === columnToSort){  
@@ -81,7 +80,7 @@ const App = () => {
         setSortConfig(newSortConfig);
     }
 
-    const sortTodos = () => { // this can just be a simple render function, that checks for sort btw every time
+    const sortTodos = () => {
         if (sortConfig) { 
             let colToSort = sortConfig['columnKey'];
             let direction = sortConfig['dirToSort'];
@@ -114,7 +113,6 @@ const App = () => {
         return todos;
     }
 
-    // does this count as storing the value instead of executing the function in props?
     const sortedTodos = sortTodos(); 
         
     return (
