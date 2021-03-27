@@ -1,11 +1,11 @@
 import React from 'react';
-import TaskItem from './TaskItem';
+import ToDoItem from './ToDoItem';
 
-const ToDoItems = ({ todos, toggleCompleted }) => {
+const ToDoItems = ({ todos, toggleCompleteItem }) => {
     return (
-        todos.map(task => {
+        todos.map(item => {
             return (
-                <TaskItem key={task.id} task={task} toggleCompleted={toggleCompleted} />
+                <ToDoItem key={item.id} item={item} toggleCompleteItem={toggleCompleteItem} />
             )
         })
     )

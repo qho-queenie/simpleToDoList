@@ -50,8 +50,8 @@ const App = () => {
         }
     }
 
-    const toggleCompleted = (taskID) => {
-        const toToggleItem = todos.find(({ id }) => id === taskID);
+    const toggleCompleteItem = (itemID) => {
+        const toToggleItem = todos.find(({ id }) => id === itemID);
         toToggleItem.completed = !toToggleItem.completed;
         setToDos([...todos]);
     }
@@ -61,7 +61,7 @@ const App = () => {
         setToDos(toRemainItems);
     }
 
-    const toggleSort = (columnToSort) => {
+    const toggleSortColumn = (columnToSort) => {
         let direction;
 
         // 1. if exists -->> flip it
@@ -125,14 +125,14 @@ const App = () => {
                             Completion
                         </th>
                         <th> 
-                            <button type="button" onClick = {() => toggleSort('task')}>
+                            <button type="button" onClick = {() => toggleSortColumn('task')}>
                                 Task 
                                 <i className="icon">{preSortIcon}</i>
                             </button>
                         </th>
                         
                         <th>
-                            <button type="button" onClick = {() => toggleSort('date')}>
+                            <button type="button" onClick = {() => toggleSortColumn('date')}>
                                 Due Date
                                 <i className="icon">{preSortIcon}</i>
                             </button>
@@ -141,7 +141,7 @@ const App = () => {
                 </thead>  
 
                 <tbody>  
-                    <ToDoItems todos={sortedTodos} toggleCompleted={toggleCompleted} />
+                    <ToDoItems todos={sortedTodos} toggleCompleteItem={toggleCompleteItem} />
                 </tbody>  
             </table>
             <input type='text' placeholder='event name' ref={toDoInput} />
