@@ -15,7 +15,7 @@ const preSortIcon = <FontAwesomeIcon icon={faSort} />
 const sortUpIcon = <FontAwesomeIcon icon={faSortUp} />
 const sortDownIcon = <FontAwesomeIcon icon={faSortDown} />
 
-function App() {
+const App = () => {
     const [todos, setToDos] = useState([]);
     const [sortConfig, setSortConfig] = useState({});
 
@@ -24,77 +24,98 @@ function App() {
 
     useEffect(() => {
         const storedTodos = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY_DATA));
-        setToDos(storedTodos)
+        setToDos(storedTodos);
     }, []); // run and clean effect only once on mount and unmount, this effect doesnt depend on any props or state so it never re-runs
     // we only call this retrieving from localStorage once, because we only need to load from saved items when page first loads up, never again
 
     useEffect(() => {
-        localStorage.setItem(LOCAL_STORAGE_KEY_DATA, JSON.stringify(todos))
-    },[todos]); // this effect only fires if the todos array changes
+        localStorage.setItem(LOCAL_STORAGE_KEY_DATA, JSON.stringify(todos));
+    }, [todos]); // this effect only fires if the todos array changes: which is toggle complete and remove tasks
 
-    function handleAddItem(e) {
-        const currentInput =  toDoInput.current.value;
+    const handleAddItem = () => {
+        const currentInput = toDoInput.current.value;
         const pickedDueDate = dueDateInput.current.value;
 
-        if(currentInput && pickedDueDate) {
-            setToDos(prevList => {
-                return [...prevList, { id:uuidv4(), name: currentInput, due: pickedDueDate, completed: false}]
-            })
+        if (currentInput && pickedDueDate){ // will implement validations in next step
+            const newTodoItem = {
+                id: uuidv4(),
+                name: currentInput,
+                due: pickedDueDate,
+                completed: false
+            };
+
+            setToDos([...todos, newTodoItem]);
+            toDoInput.current.value = null;
+            dueDateInput.current.value = null;
         }
-        toDoInput.current.value = null;
-        dueDateInput.current.value = null;
     }
 
-    function toggleCompleted(e) {
-        const currentTodos = [...todos];
-        const toToggleItem = currentTodos.find(eachCurrentTodo => eachCurrentTodo.id === e);
+    const handleCompleteItem = (itemID) => {
+        const toToggleItem = todos.find(({ id }) => id === itemID);
         toToggleItem.completed = !toToggleItem.completed;
-        setToDos(currentTodos);
+        setToDos([...todos]);
     }
 
-    function handleClearItems() {
-        const currentTodos = [...todos];
-        const toRemainItems = currentTodos.filter(eachCurrentTodo => !eachCurrentTodo.completed);
+    const handleClearItems = () => {
+        const toRemainItems = todos.filter(({ completed }) => !completed);
         setToDos(toRemainItems);
     }
 
-    function sortBy(e) {
-        const colToSort = e.target.value;
-        const currentSort = sortConfig;
-        const currentTodos = [...todos];
+    const onSortColumn = (columnToSort) => {
         let direction;
 
-        if(colToSort){
-            if(!currentSort[colToSort]){
-                direction = 'asc';
-            }
-            else {
-                direction = currentSort[colToSort] === 'asc'? 'desc' : 'asc'; 
-            }
-            currentSort[colToSort] = direction;
-
-            setSortConfig(currentSort);
-
-            if(currentTodos) {
-                if(colToSort === 'date') {
-                    currentTodos.sort((a,b) => {
-                        if(+(new Date(a.due)) < +(new Date(b.due))) return direction === 'asc'? -1 : 1;
-                        if(+(new Date(a.due)) > +(new Date(b.due))) return direction === 'asc'? 1 : -1;
-                        return 0;
-                    });
-                }
-                if(colToSort === 'task') {
-                    currentTodos.sort((a,b) => {
-                        if(a.name.toLowerCase() > b.name.toLowerCase()) return direction === 'asc'? -1 : 1;
-                        if(a.name.toLowerCase() < b.name.toLowerCase()) return direction === 'asc'? 1 : -1;
-                        return 0;
-                    });
-                }
-                setToDos(currentTodos);
-            }
+        // 1. if exists -->> flip it
+        // 2. if dont exists --> destroy everything in it, create this key
+        if (sortConfig['columnKey'] === columnToSort){  
+            direction = sortConfig['dirToSort'] === 'asc' ? 'des' : 'asc';
+        } else {
+            direction = 'asc';
         }
+
+        const newSortConfig = { 
+            columnKey: columnToSort,
+            dirToSort: direction
+         };
+
+        setSortConfig(newSortConfig);
     }
-    return(
+
+    const sortTodos = () => {
+        if (sortConfig) { 
+            let colToSort = sortConfig['columnKey'];
+            let direction = sortConfig['dirToSort'];
+        
+            if (todos){
+                if (colToSort === 'date'){
+                    if (direction === 'asc'){
+                        todos.sort((a, b) => {
+                            return new Date(a.due) - new Date(b.due);
+                        })
+                    } else {
+                        todos.sort((a, b) => {
+                            return new Date(b.due) - new Date(a.due);
+                        })
+                    }
+                }
+                
+                if (colToSort === 'task'){
+                    todos.sort((a, b) => {
+                        if (a.name.toLowerCase() > b.name.toLowerCase()){
+                            return direction === 'asc' ? -1 : 1;
+                        } 
+                        if (a.name.toLowerCase() < b.name.toLowerCase()){
+                            return direction === 'asc' ? 1 : -1;
+                        } 
+                    });
+                }
+            }  
+        }
+        return todos;
+    }
+
+    const sortedTodos = sortTodos(); 
+        
+    return (
         <div>
             <h1>A To Do List</h1>
             <table>
@@ -104,14 +125,14 @@ function App() {
                             Completion
                         </th>
                         <th> 
-                            <button type="button" value='task' onClick={sortBy}>
+                            <button type="button" onClick = {() => onSortColumn('task')}>
                                 Task 
                                 <i className="icon">{preSortIcon}</i>
                             </button>
                         </th>
                         
                         <th>
-                            <button type="button" value='date' onClick={sortBy}>
+                            <button type="button" onClick = {() => onSortColumn('date')}>
                                 Due Date
                                 <i className="icon">{preSortIcon}</i>
                             </button>
@@ -120,11 +141,11 @@ function App() {
                 </thead>  
 
                 <tbody>  
-                    <ToDoItems todos={todos} toggleCompleted={toggleCompleted} />
+                    <ToDoItems todos={sortedTodos} onCompleteItem={handleCompleteItem} />
                 </tbody>  
             </table>
-            <input type='text' placeholder='event name'ref={toDoInput} />
-            <input type="date" min={tomrISO} ref={dueDateInput}/> <button onClick={handleAddItem}> Add </button>
+            <input type='text' placeholder='event name' ref={toDoInput} />
+            <input type="date" min={tomrISO} ref={dueDateInput} /> <button onClick={handleAddItem}> Add </button>
             <hr></hr>
             <button onClick={handleClearItems}> Clear Selected Items </button>
             <h3>Number of remaining to-do items: {todos.length}</h3>
