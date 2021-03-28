@@ -18,6 +18,7 @@ const sortDownIcon = <FontAwesomeIcon icon={faSortDown} />
 const App = () => {
     const [todos, setToDos] = useState([]);
     const [sortConfig, setSortConfig] = useState({});
+    const [disableAdd, setdisableAdd] = useState(true);
 
     const toDoInput = useRef();
     const dueDateInput = useRef();
@@ -35,19 +36,17 @@ const App = () => {
     const handleAddItem = () => {
         const currentInput = toDoInput.current.value;
         const pickedDueDate = dueDateInput.current.value;
+        const newTodoItem = {
+            id: uuidv4(),
+            name: currentInput,
+            due: pickedDueDate,
+            completed: false
+        };
 
-        if (currentInput && pickedDueDate){ // will implement validations in next step
-            const newTodoItem = {
-                id: uuidv4(),
-                name: currentInput,
-                due: pickedDueDate,
-                completed: false
-            };
-
-            setToDos([...todos, newTodoItem]);
-            toDoInput.current.value = null;
-            dueDateInput.current.value = null;
-        }
+        setToDos([...todos, newTodoItem]);
+        toDoInput.current.value = null;
+        dueDateInput.current.value = null;
+        setdisableAdd(true);
     }
 
     const handleCompleteItem = (itemID) => {
@@ -59,6 +58,14 @@ const App = () => {
     const handleClearItems = () => {
         const toRemainItems = todos.filter(({ completed }) => !completed);
         setToDos(toRemainItems);
+    }
+
+    const handleValidations = () => {
+        if (!toDoInput.current.value || !dueDateInput.current.value) {
+            setdisableAdd(true);
+        } else {
+            setdisableAdd(false);
+        }
     }
 
     const onSortColumn = (columnToSort) => {
@@ -144,8 +151,8 @@ const App = () => {
                     <ToDoItems todos={sortedTodos} onCompleteItem={handleCompleteItem} />
                 </tbody>  
             </table>
-            <input type='text' placeholder='event name' ref={toDoInput} />
-            <input type="date" min={tomrISO} ref={dueDateInput} /> <button onClick={handleAddItem}> Add </button>
+            <input type='text' placeholder='event name' ref={toDoInput} onChange={() => handleValidations()}/>
+            <input type="date" min={tomrISO} ref={dueDateInput}  onChange={() => handleValidations()} /> <button onClick={handleAddItem} disabled={disableAdd}> Add </button>
             <hr></hr>
             <button onClick={handleClearItems}> Clear Selected Items </button>
             <h3>Number of remaining to-do items: {todos.length}</h3>
