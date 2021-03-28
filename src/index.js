@@ -18,7 +18,8 @@ const sortDownIcon = <FontAwesomeIcon icon={faSortDown} />
 const App = () => {
     const [todos, setToDos] = useState([]);
     const [sortConfig, setSortConfig] = useState({});
-    const [disableAdd, setdisableAdd] = useState(true);
+    const [disableAddButton, setAddButton] = useState(true);
+    const [disableClearButton, setClearButton] = useState();
 
     const toDoInput = useRef();
     const dueDateInput = useRef();
@@ -31,7 +32,8 @@ const App = () => {
 
     useEffect(() => {
         localStorage.setItem(LOCAL_STORAGE_KEY_DATA, JSON.stringify(todos));
-    }, [todos]); // this effect only fires if the todos array changes: which is toggle complete and remove tasks
+        enableClearButton();
+    }, [todos]);
 
     const handleAddItem = () => {
         const currentInput = toDoInput.current.value;
@@ -46,25 +48,36 @@ const App = () => {
         setToDos([...todos, newTodoItem]);
         toDoInput.current.value = null;
         dueDateInput.current.value = null;
-        setdisableAdd(true);
+        setAddButton(true);
     }
 
     const handleCompleteItem = (itemID) => {
         const toToggleItem = todos.find(({ id }) => id === itemID);
         toToggleItem.completed = !toToggleItem.completed;
         setToDos([...todos]);
+        enableClearButton();
     }
 
     const handleClearItems = () => {
         const toRemainItems = todos.filter(({ completed }) => !completed);
         setToDos(toRemainItems);
+        setClearButton(true);
     }
 
     const handleValidations = () => {
         if (!toDoInput.current.value || !dueDateInput.current.value) {
-            setdisableAdd(true);
+            setAddButton(true);
         } else {
-            setdisableAdd(false);
+            setAddButton(false);
+        }
+    }
+
+    const enableClearButton = () => {
+        const itemsToClear = todos.filter(({ completed }) => completed);
+        if (itemsToClear.length === 0) {
+            setClearButton(true);
+        } else {
+            setClearButton(false);
         }
     }
 
@@ -151,10 +164,10 @@ const App = () => {
                     <ToDoItems todos={sortedTodos} onCompleteItem={handleCompleteItem} />
                 </tbody>  
             </table>
-            <input type='text' placeholder='event name' ref={toDoInput} onChange={() => handleValidations()}/>
-            <input type="date" min={tomrISO} ref={dueDateInput}  onChange={() => handleValidations()} /> <button onClick={handleAddItem} disabled={disableAdd}> Add </button>
+            <input type='text' placeholder='event name' ref={toDoInput} onChange={() => handleValidations()} />
+            <input type="date" min={tomrISO} ref={dueDateInput}  onChange={() => handleValidations()} /> <button onClick={handleAddItem} disabled={disableAddButton}> Add </button>
             <hr></hr>
-            <button onClick={handleClearItems}> Clear Selected Items </button>
+            <button onClick={handleClearItems} disabled={disableClearButton}> Clear Selected Items </button>
             <h3>Number of remaining to-do items: {todos.length}</h3>
         </div>
     )
