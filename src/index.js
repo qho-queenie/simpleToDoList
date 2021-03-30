@@ -1,4 +1,4 @@
-import React, {useState, useRef, useEffect} from 'react';
+import React, {useState, useEffect} from 'react';
 import ReactDOM from 'react-dom';
 import { v4 as uuidv4 } from 'uuid'; 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -18,11 +18,11 @@ const sortDownIcon = <FontAwesomeIcon icon={faSortDown} />
 const App = () => {
     const [todos, setToDos] = useState([]);
     const [sortConfig, setSortConfig] = useState({});
-    const [disableAddButton, setAddButton] = useState(true);
-    const [disableClearButton, setClearButton] = useState();
-
-    const toDoInput = useRef();
-    const dueDateInput = useRef();
+    const [todoInputValue, setTodoInputValue] = useState('');
+    const [dateInputValue, setDateInputValue] = useState('');
+    
+    const isAddButtonDisabled = !todoInputValue || !dateInputValue;
+    const isClearButtonDisabled = !todos.some(({ completed }) => completed);
 
     useEffect(() => {
         const storedTodos = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY_DATA));
@@ -32,53 +32,31 @@ const App = () => {
 
     useEffect(() => {
         localStorage.setItem(LOCAL_STORAGE_KEY_DATA, JSON.stringify(todos));
-        enableClearButton();
     }, [todos]);
 
     const handleAddItem = () => {
-        const currentInput = toDoInput.current.value;
-        const pickedDueDate = dueDateInput.current.value;
         const newTodoItem = {
             id: uuidv4(),
-            name: currentInput,
-            due: pickedDueDate,
+            name: todoInputValue,
+            due: dateInputValue,
             completed: false
         };
 
         setToDos([...todos, newTodoItem]);
-        toDoInput.current.value = null;
-        dueDateInput.current.value = null;
-        setAddButton(true);
+
+        setTodoInputValue('');
+        setDateInputValue('');
     }
 
     const handleCompleteItem = (itemID) => {
         const toToggleItem = todos.find(({ id }) => id === itemID);
         toToggleItem.completed = !toToggleItem.completed;
         setToDos([...todos]);
-        enableClearButton();
     }
 
     const handleClearItems = () => {
         const toRemainItems = todos.filter(({ completed }) => !completed);
         setToDos(toRemainItems);
-        setClearButton(true);
-    }
-
-    const handleValidations = () => {
-        if (!toDoInput.current.value || !dueDateInput.current.value) {
-            setAddButton(true);
-        } else {
-            setAddButton(false);
-        }
-    }
-
-    const enableClearButton = () => {
-        const itemsToClear = todos.filter(({ completed }) => completed);
-        if (itemsToClear.length === 0) {
-            setClearButton(true);
-        } else {
-            setClearButton(false);
-        }
     }
 
     const onSortColumn = (columnToSort) => {
@@ -164,10 +142,10 @@ const App = () => {
                     <ToDoItems todos={sortedTodos} onCompleteItem={handleCompleteItem} />
                 </tbody>  
             </table>
-            <input type='text' placeholder='event name' ref={toDoInput} onChange={() => handleValidations()} />
-            <input type="date" min={tomrISO} ref={dueDateInput}  onChange={() => handleValidations()} /> <button onClick={handleAddItem} disabled={disableAddButton}> Add </button>
+            <input type='text' placeholder='event name' value={todoInputValue} onChange={e => setTodoInputValue(e.target.value)}  />
+            <input type="date" min={tomrISO} value={dateInputValue} onChange={e => setDateInputValue(e.target.value)} /> <button onClick={handleAddItem} disabled={isAddButtonDisabled}> Add </button>
             <hr></hr>
-            <button onClick={handleClearItems} disabled={disableClearButton}> Clear Selected Items </button>
+            <button onClick={handleClearItems} disabled={isClearButtonDisabled}> Clear Selected Items </button>
             <h3>Number of remaining to-do items: {todos.length}</h3>
         </div>
     )
