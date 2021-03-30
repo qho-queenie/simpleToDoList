@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { v4 as uuidv4 } from 'uuid'; 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -22,7 +22,7 @@ const App = () => {
     const [dateInputValue, setDateInputValue] = useState('');
     
     const isAddButtonDisabled = !todoInputValue || !dateInputValue;
-    const isClearButtonDisabled = !todos.some(({ completed }) => completed);
+    const hasCompletedItem = !todos.some(({ completed }) => completed);
 
     useEffect(() => {
         const storedTodos = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY_DATA));
@@ -143,9 +143,10 @@ const App = () => {
                 </tbody>  
             </table>
             <input type='text' placeholder='event name' value={todoInputValue} onChange={e => setTodoInputValue(e.target.value)}  />
-            <input type="date" min={tomrISO} value={dateInputValue} onChange={e => setDateInputValue(e.target.value)} /> <button onClick={handleAddItem} disabled={isAddButtonDisabled}> Add </button>
+            <input type="date" min={tomrISO} value={dateInputValue} onChange={e => setDateInputValue(e.target.value)} /> 
+            <button onClick={handleAddItem} disabled={isAddButtonDisabled}> Add </button>
             <hr></hr>
-            <button onClick={handleClearItems} disabled={isClearButtonDisabled}> Clear Selected Items </button>
+            <button onClick={handleClearItems} disabled={hasCompletedItem}> Clear Selected Items </button>
             <h3>Number of remaining to-do items: {todos.length}</h3>
         </div>
     )
