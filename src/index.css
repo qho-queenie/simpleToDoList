@@ -17,4 +17,5 @@ table {
 
   .overdue {
     color: red;
+    border-color: red;
   }
