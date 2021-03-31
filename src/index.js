@@ -50,10 +50,9 @@ const App = () => {
         setDateInputValue('');  
     }
 
-    const validateDueDate = (dateInput) => {
-        setDateInputValue(dateInput);
-
-        if (dateInput < tomrISO) {
+    const validateDueDate = (typedDateInput) => {
+        setDateInputValue(typedDateInput);
+        if (typedDateInput < tomrISO) {
             setIsDateInvalid(true);
         } else {
             setIsDateInvalid(false);
@@ -171,7 +170,8 @@ const App = () => {
             />
             <button 
                 onClick={handleAddItem} 
-                disabled={isAddButtonDisabled}> Add 
+                disabled={isAddButtonDisabled}> 
+                Add 
             </button>
             <hr></hr>
             <button 
