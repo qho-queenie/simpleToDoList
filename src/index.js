@@ -20,12 +20,10 @@ const App = () => {
     const [sortConfig, setSortConfig] = useState({});
     const [todoInputValue, setTodoInputValue] = useState('');
     const [dateInputValue, setDateInputValue] = useState('');
-
     const [isDateInvalid, setIsDateInvalid] = useState(false);
-    const [inputErrorMessage, setInputErrorMessage] = useState('');
+    const [hasTaskInputBeenTouched, setHasTaskInputBeenTouched] = useState(false);
 
-
-    const isAddButtonDisabled = !todoInputValue || !dateInputValue || isDateInvalid;
+    const isAddButtonDisabled = (!todoInputValue && hasTaskInputBeenTouched) || !todoInputValue || !dateInputValue || isDateInvalid;
     const hasCompletedItem = !todos.some(({ completed }) => completed);
 
     useEffect(() => {
@@ -56,12 +54,10 @@ const App = () => {
     const validateDueDate = (e) => {
         setDateInputValue(e);
 
-        if (e <= tomrISO) {
+        if (e < tomrISO) {
             setIsDateInvalid(true);
-            setInputErrorMessage('please enter a future/valid date');
         } else {
             setIsDateInvalid(false);
-            setInputErrorMessage('');
         }
     }
 
@@ -159,15 +155,32 @@ const App = () => {
                     <ToDoItems todos={sortedTodos} onCompleteItem={handleCompleteItem} />
                 </tbody>  
             </table>
-            <input type='text' placeholder='event name' value={todoInputValue} onChange={e => setTodoInputValue(e.target.value)} />
-            <input className={isDateInvalid ? 'overdue' : 'notDueYet'} type="date" min={tomrISO} value={dateInputValue} onChange={e => validateDueDate(e.target.value)} /> 
-            <button onClick={handleAddItem} disabled={isAddButtonDisabled}> Add </button>
-            <span>
-                <h3>{inputErrorMessage}</h3>
-            </span>
+
+            <input 
+                className={!todoInputValue && hasTaskInputBeenTouched ? 'invalid' : null}
+                type='text' 
+                placeholder='event name' 
+                value={todoInputValue} 
+                onBlur={() => setHasTaskInputBeenTouched(true)}
+                onChange={e => setTodoInputValue(e.target.value)}
+            />
+            <input 
+                className={isDateInvalid ? 'invalid' : null}
+                type="date" min={tomrISO} 
+                value={dateInputValue}
+                onChange={e => validateDueDate(e.target.value)}  
+            />
+            <button 
+                onClick={handleAddItem} 
+                disabled={isAddButtonDisabled}> Add 
+            </button>
             
             <hr></hr>
-            <button onClick={handleClearItems} disabled={hasCompletedItem}> Clear Selected Items </button>
+            <button 
+                onClick={handleClearItems} 
+                disabled={hasCompletedItem}> 
+                Clear Selected Items 
+            </button>
             <h3>Number of remaining to-do items: {todos.length}</h3>
         </div>
     )
