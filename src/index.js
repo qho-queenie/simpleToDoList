@@ -37,7 +37,6 @@ const App = () => {
     }, [todos]);
 
     const handleAddItem = () => {
-
         const newTodoItem = {
             id: uuidv4(),
             name: todoInputValue,
@@ -51,10 +50,10 @@ const App = () => {
         setDateInputValue('');  
     }
 
-    const validateDueDate = (e) => {
-        setDateInputValue(e);
+    const validateDueDate = (dateInput) => {
+        setDateInputValue(dateInput);
 
-        if (e < tomrISO) {
+        if (dateInput < tomrISO) {
             setIsDateInvalid(true);
         } else {
             setIsDateInvalid(false);
@@ -127,7 +126,7 @@ const App = () => {
     const sortedTodos = sortTodos(); 
 
     return (
-        <div>   
+        <div> 
             <h1>A To Do List</h1>
             <table>
                 <thead>
@@ -159,7 +158,7 @@ const App = () => {
             <input 
                 className={!todoInputValue && hasTaskInputBeenTouched ? 'invalid' : null}
                 type='text' 
-                placeholder='event name' 
+                placeholder='event name'
                 value={todoInputValue} 
                 onBlur={() => setHasTaskInputBeenTouched(true)}
                 onChange={e => setTodoInputValue(e.target.value)}
@@ -174,7 +173,6 @@ const App = () => {
                 onClick={handleAddItem} 
                 disabled={isAddButtonDisabled}> Add 
             </button>
-            
             <hr></hr>
             <button 
                 onClick={handleClearItems} 
