@@ -1,19 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { v4 as uuidv4 } from 'uuid';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSort, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons';
 
 import ToDoItems from './ToDoItems';
+import TableHeader from './TableHeader';
 import './index.css';
 
 const LOCAL_STORAGE_KEY_DATA = 'todoApp.todos';
 
 const tomrISO = new Date().toISOString().split('T')[0];
-
-const preSortIcon = <FontAwesomeIcon icon={faSort} />
-const sortUpIcon = <FontAwesomeIcon icon={faSortUp} />
-const sortDownIcon = <FontAwesomeIcon icon={faSortDown} />
 
 const App = () => {
     const [todos, setToDos] = useState([]);
@@ -131,17 +126,11 @@ const App = () => {
                             Completion
                         </th>
                         <th>
-                            <button type="button" onClick={() => onSortColumn('task')}>
-                                Task
-                                <i className="icon">{preSortIcon}</i>
-                            </button>
+                            <TableHeader sortConfig={sortConfig} onSortColumn={onSortColumn} colName={'task'}></TableHeader>
                         </th>
 
                         <th>
-                            <button type="button" onClick={() => onSortColumn('date')}>
-                                Due Date
-                                <i className="icon">{preSortIcon}</i>
-                            </button>
+                            <TableHeader sortConfig={sortConfig} onSortColumn={onSortColumn} colName={'date'}></TableHeader>
                         </th>
                     </tr>
                 </thead>
