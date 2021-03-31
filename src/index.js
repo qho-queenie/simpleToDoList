@@ -48,6 +48,7 @@ const App = () => {
 
         setTodoInputValue('');
         setDateInputValue('');  
+        setHasTaskInputBeenTouched(false);
     }
 
     const validateDueDate = (typedDateInput) => {
