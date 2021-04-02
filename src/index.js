@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
-import { v4 as uuidv4 } from 'uuid'; 
+import { v4 as uuidv4 } from 'uuid';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSort, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons';
 
@@ -47,11 +47,11 @@ const App = () => {
         setToDos([...todos, newTodoItem]);
 
         setTodoInputValue('');
-        setDateInputValue('');  
+        setDateInputValue('');
         setHasTaskInputBeenTouched(false);
     }
 
-    const validateDueDate = (typedDateInput) => {
+    const handleDateInputChange = (typedDateInput) => {
         setDateInputValue(typedDateInput);
         if (typedDateInput < tomrISO) {
             setIsDateInvalid(true);
@@ -76,28 +76,28 @@ const App = () => {
 
         // 1. if exists -->> flip it
         // 2. if dont exists --> destroy everything in it, create this key
-        if (sortConfig['columnKey'] === columnToSort){  
+        if (sortConfig['columnKey'] === columnToSort) {
             direction = sortConfig['dirToSort'] === 'asc' ? 'des' : 'asc';
         } else {
             direction = 'asc';
         }
 
-        const newSortConfig = { 
+        const newSortConfig = {
             columnKey: columnToSort,
             dirToSort: direction
-         };
+        };
 
         setSortConfig(newSortConfig);
     }
 
     const sortTodos = () => {
-        if (sortConfig) { 
+        if (sortConfig) {
             let colToSort = sortConfig['columnKey'];
             let direction = sortConfig['dirToSort'];
-        
-            if (todos){
-                if (colToSort === 'date'){
-                    if (direction === 'asc'){
+
+            if (todos) {
+                if (colToSort === 'date') {
+                    if (direction === 'asc') {
                         todos.sort((a, b) => {
                             return new Date(a.due) - new Date(b.due);
                         })
@@ -107,26 +107,26 @@ const App = () => {
                         })
                     }
                 }
-                
-                if (colToSort === 'task'){
+
+                if (colToSort === 'task') {
                     todos.sort((a, b) => {
-                        if (a.name.toLowerCase() > b.name.toLowerCase()){
+                        if (a.name.toLowerCase() > b.name.toLowerCase()) {
                             return direction === 'asc' ? -1 : 1;
-                        } 
-                        if (a.name.toLowerCase() < b.name.toLowerCase()){
+                        }
+                        if (a.name.toLowerCase() < b.name.toLowerCase()) {
                             return direction === 'asc' ? 1 : -1;
-                        } 
+                        }
                     });
                 }
-            }  
+            }
         }
         return todos;
     }
 
-    const sortedTodos = sortTodos(); 
+    const sortedTodos = sortTodos();
 
     return (
-        <div> 
+        <div>
             <h1>A To Do List</h1>
             <table>
                 <thead>
@@ -134,51 +134,54 @@ const App = () => {
                         <th>
                             Completion
                         </th>
-                        <th> 
-                            <button type="button" onClick = {() => onSortColumn('task')}>
-                                Task 
+                        <th>
+                            <button type="button" onClick={() => onSortColumn('task')}>
+                                Task
                                 <i className="icon">{preSortIcon}</i>
                             </button>
                         </th>
-                        
+
                         <th>
-                            <button type="button" onClick = {() => onSortColumn('date')}>
+                            <button type="button" onClick={() => onSortColumn('date')}>
                                 Due Date
                                 <i className="icon">{preSortIcon}</i>
                             </button>
                         </th>
                     </tr>
-                </thead>  
+                </thead>
 
-                <tbody>  
+                <tbody>
                     <ToDoItems todos={sortedTodos} onCompleteItem={handleCompleteItem} />
-                </tbody>  
+                </tbody>
             </table>
 
-            <input 
-                className={!todoInputValue && hasTaskInputBeenTouched ? 'invalid' : null}
-                type='text' 
+            <input
+                className={!todoInputValue && hasTaskInputBeenTouched ? 'invalid' : ''}
+                type='text'
                 placeholder='event name'
-                value={todoInputValue} 
+                value={todoInputValue}
                 onBlur={() => setHasTaskInputBeenTouched(true)}
                 onChange={e => setTodoInputValue(e.target.value)}
             />
-            <input 
-                className={isDateInvalid ? 'invalid' : null}
-                type="date" min={tomrISO} 
+            <input
+                className={isDateInvalid ? 'invalid' : ''}
+                type="date"
+                min={tomrISO}
                 value={dateInputValue}
-                onChange={e => validateDueDate(e.target.value)}  
+                onChange={e => handleDateInputChange(e.target.value)}
             />
-            <button 
-                onClick={handleAddItem} 
-                disabled={isAddButtonDisabled}> 
-                Add 
+            <button
+                onClick={handleAddItem}
+                disabled={isAddButtonDisabled}
+            >
+                Add
             </button>
             <hr></hr>
-            <button 
-                onClick={handleClearItems} 
-                disabled={hasCompletedItem}> 
-                Clear Selected Items 
+            <button
+                onClick={handleClearItems}
+                disabled={hasCompletedItem}
+            >
+                Clear Selected Items
             </button>
             <h3>Number of remaining to-do items: {todos.length}</h3>
         </div>

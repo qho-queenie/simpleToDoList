@@ -5,18 +5,17 @@ const ToDoItem = ({ item, onCompleteItem }) => {
     const isOverDue = new Date(due) <= new Date();
 
     return (
-        <tr
-            className={isOverDue ? 'overdue' : 'notDueYet'}>
+        <tr className={isOverDue ? 'overdue' : 'notDueYet'}>
             <td>
-                <input 
-                    type='checkbox' 
-                    checked={completed} 
-                    onChange={() => onCompleteItem(id)} 
+                <input
+                    type='checkbox'
+                    checked={completed}
+                    onChange={() => onCompleteItem(id)}
                 />
             </td>
             <td>{name}</td>
             <td>{due}</td>
-        </tr>   
+        </tr>
     )
 }
 
