@@ -78,8 +78,6 @@ const App = () => {
         // 2. if dont exists --> destroy everything in it, create this key
         if (sortConfig['columnKey'] === columnToSort) {
             direction = sortConfig['dirToSort'] === 'asc' ? 'des' : 'asc';
-        } else {
-            direction = 'asc';
         }
 
         const newSortConfig = {
@@ -96,28 +94,26 @@ const App = () => {
             let direction = sortConfig['dirToSort'];
 
             if (todos) {
-                if (colToSort === 'date') {
-                    if (direction === 'asc') {
-                        todos.sort((a, b) => {
-                            return new Date(a.due) - new Date(b.due);
-                        })
-                    } else {
-                        todos.sort((a, b) => {
-                            return new Date(b.due) - new Date(a.due);
-                        })
-                    }
-                }
-
-                if (colToSort === 'task') {
+                if (colToSort === 'date' && direction === 'asc') {
                     todos.sort((a, b) => {
-                        if (a.name.toLowerCase() > b.name.toLowerCase()) {
-                            return direction === 'asc' ? -1 : 1;
-                        }
-                        if (a.name.toLowerCase() < b.name.toLowerCase()) {
-                            return direction === 'asc' ? 1 : -1;
-                        }
-                    });
+                        return new Date(a.due) - new Date(b.due);
+                    })
+                } else {
+                    todos.sort((a, b) => {
+                        return new Date(b.due) - new Date(a.due);
+                    })
                 }
+            }
+
+            if (colToSort === 'task') {
+                todos.sort((a, b) => {
+                    if (a.name.toLowerCase() > b.name.toLowerCase()) {
+                        return direction === 'asc' ? -1 : 1;
+                    }
+                    if (a.name.toLowerCase() < b.name.toLowerCase()) {
+                        return direction === 'asc' ? 1 : -1;
+                    }
+                });
             }
         }
         return todos;
