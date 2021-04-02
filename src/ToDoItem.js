@@ -6,10 +6,16 @@ const ToDoItem = ({ item, onCompleteItem }) => {
 
     return (
         <tr className={isOverDue ? 'overdue' : 'notDueYet'}>
-            <td><input type='checkbox' checked={completed} onChange={() => onCompleteItem(id)} /></td>
+            <td>
+                <input
+                    type='checkbox'
+                    checked={completed}
+                    onChange={() => onCompleteItem(id)}
+                />
+            </td>
             <td>{name}</td>
             <td>{due}</td>
-        </tr>   
+        </tr>
     )
 }
 

@@ -1,6 +1,6 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
-import { v4 as uuidv4 } from 'uuid'; 
+import { v4 as uuidv4 } from 'uuid';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSort, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons';
 
@@ -20,9 +20,11 @@ const App = () => {
     const [sortConfig, setSortConfig] = useState({});
     const [todoInputValue, setTodoInputValue] = useState('');
     const [dateInputValue, setDateInputValue] = useState('');
-    
-    const isAddButtonDisabled = !todoInputValue || !dateInputValue;
-    const isClearButtonDisabled = !todos.some(({ completed }) => completed);
+    const [isDateInvalid, setIsDateInvalid] = useState(false);
+    const [hasTaskInputBeenTouched, setHasTaskInputBeenTouched] = useState(false);
+
+    const isAddButtonDisabled = (!todoInputValue && hasTaskInputBeenTouched) || !todoInputValue || !dateInputValue || isDateInvalid;
+    const hasCompletedItem = !todos.some(({ completed }) => completed);
 
     useEffect(() => {
         const storedTodos = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY_DATA));
@@ -46,6 +48,16 @@ const App = () => {
 
         setTodoInputValue('');
         setDateInputValue('');
+        setHasTaskInputBeenTouched(false);
+    }
+
+    const handleDateInputChange = (typedDateInput) => {
+        setDateInputValue(typedDateInput);
+        if (typedDateInput < tomrISO) {
+            setIsDateInvalid(true);
+        } else {
+            setIsDateInvalid(false);
+        }
     }
 
     const handleCompleteItem = (itemID) => {
@@ -64,55 +76,51 @@ const App = () => {
 
         // 1. if exists -->> flip it
         // 2. if dont exists --> destroy everything in it, create this key
-        if (sortConfig['columnKey'] === columnToSort){  
+        if (sortConfig['columnKey'] === columnToSort) {
             direction = sortConfig['dirToSort'] === 'asc' ? 'des' : 'asc';
-        } else {
-            direction = 'asc';
         }
 
-        const newSortConfig = { 
+        const newSortConfig = {
             columnKey: columnToSort,
             dirToSort: direction
-         };
+        };
 
         setSortConfig(newSortConfig);
     }
 
     const sortTodos = () => {
-        if (sortConfig) { 
+        if (sortConfig) {
             let colToSort = sortConfig['columnKey'];
             let direction = sortConfig['dirToSort'];
-        
-            if (todos){
-                if (colToSort === 'date'){
-                    if (direction === 'asc'){
-                        todos.sort((a, b) => {
-                            return new Date(a.due) - new Date(b.due);
-                        })
-                    } else {
-                        todos.sort((a, b) => {
-                            return new Date(b.due) - new Date(a.due);
-                        })
-                    }
-                }
-                
-                if (colToSort === 'task'){
+
+            if (todos) {
+                if (colToSort === 'date' && direction === 'asc') {
                     todos.sort((a, b) => {
-                        if (a.name.toLowerCase() > b.name.toLowerCase()){
-                            return direction === 'asc' ? -1 : 1;
-                        } 
-                        if (a.name.toLowerCase() < b.name.toLowerCase()){
-                            return direction === 'asc' ? 1 : -1;
-                        } 
-                    });
+                        return new Date(a.due) - new Date(b.due);
+                    })
+                } else {
+                    todos.sort((a, b) => {
+                        return new Date(b.due) - new Date(a.due);
+                    })
                 }
-            }  
+            }
+
+            if (colToSort === 'task') {
+                todos.sort((a, b) => {
+                    if (a.name.toLowerCase() > b.name.toLowerCase()) {
+                        return direction === 'asc' ? -1 : 1;
+                    }
+                    if (a.name.toLowerCase() < b.name.toLowerCase()) {
+                        return direction === 'asc' ? 1 : -1;
+                    }
+                });
+            }
         }
         return todos;
     }
 
-    const sortedTodos = sortTodos(); 
-        
+    const sortedTodos = sortTodos();
+
     return (
         <div>
             <h1>A To Do List</h1>
@@ -122,30 +130,55 @@ const App = () => {
                         <th>
                             Completion
                         </th>
-                        <th> 
-                            <button type="button" onClick = {() => onSortColumn('task')}>
-                                Task 
+                        <th>
+                            <button type="button" onClick={() => onSortColumn('task')}>
+                                Task
                                 <i className="icon">{preSortIcon}</i>
                             </button>
                         </th>
-                        
+
                         <th>
-                            <button type="button" onClick = {() => onSortColumn('date')}>
+                            <button type="button" onClick={() => onSortColumn('date')}>
                                 Due Date
                                 <i className="icon">{preSortIcon}</i>
                             </button>
                         </th>
                     </tr>
-                </thead>  
+                </thead>
 
-                <tbody>  
+                <tbody>
                     <ToDoItems todos={sortedTodos} onCompleteItem={handleCompleteItem} />
-                </tbody>  
+                </tbody>
             </table>
-            <input type='text' placeholder='event name' value={todoInputValue} onChange={e => setTodoInputValue(e.target.value)}  />
-            <input type="date" min={tomrISO} value={dateInputValue} onChange={e => setDateInputValue(e.target.value)} /> <button onClick={handleAddItem} disabled={isAddButtonDisabled}> Add </button>
+
+            <input
+                className={!todoInputValue && hasTaskInputBeenTouched ? 'invalid' : ''}
+                type='text'
+                placeholder='event name'
+                value={todoInputValue}
+                onBlur={() => setHasTaskInputBeenTouched(true)}
+                onChange={e => setTodoInputValue(e.target.value)}
+            />
+            <input
+                className={isDateInvalid ? 'invalid' : ''}
+                type="date"
+                min={tomrISO}
+                value={dateInputValue}
+                onChange={e => handleDateInputChange(e.target.value)}
+            />
+            <button
+                onClick={handleAddItem}
+                disabled={isAddButtonDisabled}
+            >
+                Add
+            </button>
             <hr></hr>
-            <button onClick={handleClearItems} disabled={isClearButtonDisabled}> Clear Selected Items </button>
+            <button
+                onClick={handleClearItems}
+                disabled={hasCompletedItem}
+            >
+                Clear Selected Items
+            </button>
             <h3>Number of remaining to-do items: {todos.length}</h3>
         </div>
     )

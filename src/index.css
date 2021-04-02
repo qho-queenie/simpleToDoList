@@ -18,3 +18,7 @@ table {
   .overdue {
     color: red;
   }
+
+  .invalid {
+    border-color: red;
+  }
