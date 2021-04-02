@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { v4 as uuidv4 } from 'uuid';
 
+import SortableTableHeader from './SortableTableHeader';
 import ToDoItems from './ToDoItems';
-import TableHeader from './TableHeader';
 import './index.css';
 
 const LOCAL_STORAGE_KEY_DATA = 'todoApp.todos';
@@ -126,11 +126,18 @@ const App = () => {
                             Completion
                         </th>
                         <th>
-                            <TableHeader sortConfig={sortConfig} onSortColumn={onSortColumn} colName={'task'}></TableHeader>
+                            <SortableTableHeader
+                                sortConfig={sortConfig}
+                                colName={'task'}
+                                onSortColumn={onSortColumn}
+                            />
                         </th>
-
                         <th>
-                            <TableHeader sortConfig={sortConfig} onSortColumn={onSortColumn} colName={'date'}></TableHeader>
+                            <SortableTableHeader
+                                sortConfig={sortConfig}
+                                colName={'date'}
+                                onSortColumn={onSortColumn}
+                            />
                         </th>
                     </tr>
                 </thead>
@@ -139,7 +146,6 @@ const App = () => {
                     <ToDoItems todos={sortedTodos} onCompleteItem={handleCompleteItem} />
                 </tbody>
             </table>
-
             <input
                 className={!todoInputValue && hasTaskInputBeenTouched ? 'invalid' : ''}
                 type='text'
