@@ -1,12 +1,7 @@
 import React from "react";
-import { shallow, mount } from "enzyme";
-import { expect, should, chaiDom } from 'chai';
+import { shallow } from "enzyme";
+import { expect } from 'chai';
 import App from "./App";
-
-// MethodName_StateUnderTest_ExpectedBehavior
-// MethodName_ExpectedBehavior_StateUnderTest
-// Should_ExpectedBehavior_When_StateUnderTest
-// When_StateUnderTest_Expect_ExpectedBehavior
 
 const wrapper = shallow(<App />);
 
@@ -30,6 +25,8 @@ describe("<App /> without any props", () => {
         expect(input).to.have.lengthOf(2);
     });
 
+    // https://www.npmjs.com/package/@testing-library/jest-dom
+    // I have jest-dom so getByTestid should work
     it("the Add button is disabled", () => {
         const addButton = wrapper.find('.addButton');
         expect(getByTestId('addButton')).toBeDisabled()
