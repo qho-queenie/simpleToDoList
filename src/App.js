@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSort, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons';
 
 import ToDoItems from './ToDoItems';
-import './index.css';
+import './styles/App.css';
 
 const LOCAL_STORAGE_KEY_DATA = 'todoApp.todos';
 
