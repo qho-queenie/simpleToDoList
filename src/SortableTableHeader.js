@@ -4,7 +4,7 @@ import { faSort, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons'
 
 const SortableTableHeader = ({ sortConfig, onSortColumn, colName }) => {
     // no columns have been sorted yet, or the last sorted column isnt itself
-    if (!sortConfig || sortConfig['columnKey'] !== colName) {
+    if (sortConfig['columnKey'] !== colName) {
         return (
             <button type='button' onClick={() => onSortColumn(colName)}>
                 {colName}

@@ -68,8 +68,12 @@ const App = () => {
     const onSortColumn = (columnToSort) => {
         let direction;
 
-        // 1. if exists -->> flip it
-        // 2. if dont exists --> destroy everything in it, create this key
+        // 1. if dont exists --> destroy everything in it, create this key
+        // 2. if exists -->> flip it
+
+        if (sortConfig['columnKey'] !== columnToSort) {
+            direction = 'asc';
+        }
         if (sortConfig['columnKey'] === columnToSort) {
             direction = sortConfig['dirToSort'] === 'asc' ? 'des' : 'asc';
         }
@@ -88,7 +92,7 @@ const App = () => {
             let direction = sortConfig['dirToSort'];
 
             if (todos) {
-                if (colToSort === 'date' && direction === 'asc') {
+                if (colToSort === 'date' && direction === 'des') {
                     todos.sort((a, b) => {
                         return new Date(a.due) - new Date(b.due);
                     })
