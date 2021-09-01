@@ -1,18 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSort, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons';
 
 import ToDoItems from './ToDoItems';
+import SortableTableHeader from './SortableTableHeader';
 import './styles/App.css';
 
 const LOCAL_STORAGE_KEY_DATA = 'todoApp.todos';
 
 const tomrISO = new Date().toISOString().split('T')[0];
-
-const preSortIcon = <FontAwesomeIcon icon={faSort} />
-const sortUpIcon = <FontAwesomeIcon icon={faSortUp} />
-const sortDownIcon = <FontAwesomeIcon icon={faSortDown} />
 
 const App = () => {
     const [todos, setToDos] = useState([]);
@@ -73,8 +68,12 @@ const App = () => {
     const onSortColumn = (columnToSort) => {
         let direction;
 
-        // 1. if exists -->> flip it
-        // 2. if dont exists --> destroy everything in it, create this key
+        // 1. if dont exists --> destroy everything in it, create this key
+        // 2. if exists -->> flip it
+
+        if (sortConfig['columnKey'] !== columnToSort) {
+            direction = 'asc';
+        }
         if (sortConfig['columnKey'] === columnToSort) {
             direction = sortConfig['dirToSort'] === 'asc' ? 'des' : 'asc';
         }
@@ -93,7 +92,7 @@ const App = () => {
             let direction = sortConfig['dirToSort'];
 
             if (todos) {
-                if (colToSort === 'date' && direction === 'asc') {
+                if (colToSort === 'date' && direction === 'des') {
                     todos.sort((a, b) => {
                         return new Date(a.due) - new Date(b.due);
                     })
@@ -130,17 +129,19 @@ const App = () => {
                             Completion
                         </th>
                         <th>
-                            <button type="button" onClick={() => onSortColumn('task')}>
-                                Task
-                                <i className="icon">{preSortIcon}</i>
-                            </button>
-                        </th>
+                            <SortableTableHeader
+                                sortConfig={sortConfig}
+                                onSortColumn={onSortColumn}
+                                colName='task'
 
+                            />
+                        </th>
                         <th>
-                            <button type="button" onClick={() => onSortColumn('date')}>
-                                Due Date
-                                <i className="icon">{preSortIcon}</i>
-                            </button>
+                            <SortableTableHeader
+                                sortConfig={sortConfig}
+                                onSortColumn={onSortColumn}
+                                colName='date'
+                            />
                         </th>
                     </tr>
                 </thead>
