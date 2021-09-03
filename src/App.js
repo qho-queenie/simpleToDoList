@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import ToDoItems from './ToDoItems';
 import SortableTableHeader from './SortableTableHeader';
-import './styles/App.css';
+import './styles/App.scss';
 
 const LOCAL_STORAGE_KEY_DATA = 'todoApp.todos';
 
@@ -120,7 +120,7 @@ const App = () => {
     const sortedTodos = sortTodos();
 
     return (
-        <div>
+        <div className={'mainContent'}>
             <h1>A To Do List</h1>
             <table>
                 <thead>
@@ -172,7 +172,6 @@ const App = () => {
             >
                 Add
             </button>
-            <hr></hr>
             <button
                 onClick={handleClearItems}
                 disabled={hasCompletedItem}
