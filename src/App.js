@@ -121,7 +121,6 @@ const App = () => {
 
     return (
         <div className={'mainContent'}>
-            <div className={'background'}></div>
             <h1>A To Do List</h1>
             <table>
                 <thead>

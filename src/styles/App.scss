@@ -19,17 +19,36 @@
       background-color: white;
       opacity: 0.5;
       font-size: 20px;
+      max-height: 200px;
+      overflow-y: scroll;
+      display: table;
 
       thead {
         font-size: 20px;
+
+        tr {
+          display: table;
+          width: 100%;
+        }
+
+        th {
+          width: 33%;
+        }
       }
 
       tbody {
         font-size: 18px;
+        display: block;
+        overflow-y: scroll;
+        max-height: 300px;
 
         tr:hover {
           background-color: #63aac0;
-          //color: #284e60;
+        }
+
+        tr {
+          display: table;
+          width: 100%;
         }
 
         th,
@@ -37,7 +56,9 @@
           padding: 8px;
           text-align: center;
           border-bottom: 1px solid #ddd;
+          width: 30%;
         }
+
         .overdue {
           color: red;
         }
