@@ -1,18 +1,14 @@
 #root {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  background-image: url('./images/monstera_bg.jpg');
-  background-size: cover;
-  font-family: Arial, Helvetica, sans-serif;
-
   .mainContent {
+    overflow: auto;
+    position: relative;
     text-align: center;
     width: 100%;
+    font-family: Arial, Helvetica, sans-serif;
 
     h1 {
       color: #f99b45;
+      font-size: 50px;
     }
 
     table {
@@ -58,4 +54,20 @@
       opacity: 0.5;
     }
   }
+}
+
+#root::before {
+  content: '';
+  position: fixed;
+  z-index: -1;
+  display: block;
+  background-image: url('./images/monstera_bg.jpg');
+  height: 885px;
+  background-size: 100% 100%;
+  filter: blur(5px);
+
+  // these are to cover the white borders:
+  left: -5%;
+  right: -5%;
+  top: -1%;
 }
