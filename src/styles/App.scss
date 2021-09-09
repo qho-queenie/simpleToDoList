@@ -18,13 +18,15 @@
       margin: 20px auto;
       background-color: white;
       opacity: 0.5;
-      font-size: 20px;
       max-height: 200px;
       overflow-y: scroll;
       display: table;
+      overflow: hidden;
 
       thead {
-        font-size: 20px;
+        background-color: #f99b45;
+        line-height: 50px;
+        text-align: center;
 
         tr {
           display: table;
@@ -62,11 +64,13 @@
         .overdue {
           color: red;
         }
+
         .invalid {
           border-color: red;
         }
       }
     }
+
     h3 {
       width: 25%;
       border-radius: 25px;
@@ -74,6 +78,20 @@
       background-color: white;
       opacity: 0.5;
     }
+  }
+
+  .variousInputs {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    border-radius: 15px;
+    gap: 10px;
+    background-color: #f99b45;
+    opacity: 0.5;
+    width: 50%;
+    min-width: 335px;
+    margin: 0 auto;
+    padding: 10px 0;
   }
 }
 

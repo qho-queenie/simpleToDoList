@@ -151,33 +151,35 @@ const App = () => {
                 </tbody>
             </table>
 
-            <input
-                className={!todoInputValue && hasTaskInputBeenTouched ? 'invalid' : ''}
-                type='text'
-                placeholder='event name'
-                value={todoInputValue}
-                onBlur={() => setHasTaskInputBeenTouched(true)}
-                onChange={e => setTodoInputValue(e.target.value)}
-            />
-            <input
-                className={isDateInvalid ? 'invalid' : ''}
-                type="date"
-                min={tomrISO}
-                value={dateInputValue}
-                onChange={e => handleDateInputChange(e.target.value)}
-            />
-            <button
-                onClick={handleAddItem}
-                disabled={isAddButtonDisabled}
-            >
-                Add
-            </button>
-            <button
-                onClick={handleClearItems}
-                disabled={hasCompletedItem}
-            >
-                Clear Selected Items
-            </button>
+            <div className={'variousInputs'}>
+                <input
+                    className={!todoInputValue && hasTaskInputBeenTouched ? 'invalid' : ''}
+                    type='text'
+                    placeholder='event name'
+                    value={todoInputValue}
+                    onBlur={() => setHasTaskInputBeenTouched(true)}
+                    onChange={e => setTodoInputValue(e.target.value)}
+                />
+                <input
+                    className={isDateInvalid ? 'invalid' : ''}
+                    type="date"
+                    min={tomrISO}
+                    value={dateInputValue}
+                    onChange={e => handleDateInputChange(e.target.value)}
+                />
+                <button
+                    onClick={handleAddItem}
+                    disabled={isAddButtonDisabled}
+                >
+                    Add
+                </button>
+                <button
+                    onClick={handleClearItems}
+                    disabled={hasCompletedItem}
+                >
+                    Clear Selected Items
+                </button>
+            </div>
             <h3>Number of remaining to-do items: {todos.length}</h3>
         </div>
     )
