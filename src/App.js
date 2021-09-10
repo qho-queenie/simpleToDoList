@@ -156,6 +156,7 @@ const App = () => {
                     className={!todoInputValue && hasTaskInputBeenTouched ? 'invalid' : ''}
                     type='text'
                     placeholder='event name'
+                    maxLength='15'
                     value={todoInputValue}
                     onBlur={() => setHasTaskInputBeenTouched(true)}
                     onChange={e => setTodoInputValue(e.target.value)}
