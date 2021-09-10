@@ -6,14 +6,20 @@ import { faSort, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons'
 
 const SortableTableHeader = ({ sortConfig, onSortColumn, colName }) => {
     let icon = faSort;
+    let activeSortCol = '';
+
     if (sortConfig['columnKey'] === colName) {
-        icon = sortConfig['dirToSort'] === 'asc' ? faSortDown : faSortUp
+        icon = sortConfig['dirToSort'] === 'asc' ? faSortDown : faSortUp;
+        activeSortCol = 'activeSort';
     }
+
     return (
-        <button type='button' onClick={() => onSortColumn(colName)}>
+        <button type='button' onClick={() => onSortColumn(colName)} className={activeSortCol}>
             {colName}
-            <FontAwesomeIcon icon={icon} />
-        </button>
+            <i>
+                <FontAwesomeIcon icon={icon} />
+            </i>
+        </button >
     )
 }
 

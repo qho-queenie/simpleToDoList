@@ -1,4 +1,14 @@
 thead > tr > th,
 button {
   font-size: 20px;
+  padding: 3px 10px;
+  border-radius: 7px;
+
+  .activeSort {
+    background-color: #68e7e0;
+  }
+
+  i {
+    padding-left: 8px;
+  }
 }

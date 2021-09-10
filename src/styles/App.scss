@@ -17,7 +17,7 @@
       width: 75%;
       margin: 20px auto;
       background-color: white;
-      opacity: 0.5;
+      opacity: 0.7;
       max-height: 200px;
       overflow-y: scroll;
       display: table;
@@ -73,10 +73,17 @@
 
     h3 {
       width: 25%;
-      border-radius: 25px;
+      padding: 5px 0;
+      border-radius: 15px;
       margin: 20px auto;
       background-color: white;
-      opacity: 0.5;
+      opacity: 0.7;
+      min-width: 385px;
+    }
+
+    button {
+      cursor: pointer;
+      font-size: 17px;
     }
   }
 
@@ -87,11 +94,15 @@
     border-radius: 15px;
     gap: 10px;
     background-color: #f99b45;
-    opacity: 0.5;
+    opacity: 0.7;
     width: 50%;
     min-width: 335px;
     margin: 0 auto;
     padding: 10px 0;
+
+    input {
+      text-align: center;
+    }
   }
 }
 
