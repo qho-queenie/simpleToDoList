@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import ToDoItems from './ToDoItems';
 import SortableTableHeader from './SortableTableHeader';
+import SearchBar from './SearchBar';
 import './styles/App.scss';
 
 const LOCAL_STORAGE_KEY_DATA = 'todoApp.todos';
@@ -16,6 +17,7 @@ const App = () => {
     const [dateInputValue, setDateInputValue] = useState('');
     const [isDateInvalid, setIsDateInvalid] = useState(false);
     const [hasTaskInputBeenTouched, setHasTaskInputBeenTouched] = useState(false);
+    const [searchText, setSearchText] = useState('');
 
     const isAddButtonDisabled = (!todoInputValue && hasTaskInputBeenTouched) || !todoInputValue || !dateInputValue || isDateInvalid;
     const hasCompletedItem = !todos.some(({ completed }) => completed);
@@ -86,6 +88,17 @@ const App = () => {
         setSortConfig(newSortConfig);
     }
 
+    const setSearchTaskText = (enteredSearchText) => {
+        let cleanedSearchText = enteredSearchText.trim().toLowerCase();
+        setSearchText(enteredSearchText);
+        if (cleanedSearchText.length > 0 && todos) {
+            console.log([...todos])
+            let searchResults = [...todos].filter(x => x.name.includes(cleanedSearchText));
+            console.log('searchResults', searchResults);
+        }
+
+    }
+
     const sortTodos = () => {
         if (sortConfig) {
             let colToSort = sortConfig['columnKey'];
@@ -119,9 +132,15 @@ const App = () => {
 
     const sortedTodos = sortTodos();
 
+
+
     return (
         <div className={'mainContent'}>
             <h1>A To Do List</h1>
+
+            <SearchBar
+                onSearchTask={setSearchTaskText}
+            />
             <table>
                 <thead>
                     <tr>
