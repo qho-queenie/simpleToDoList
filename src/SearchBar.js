@@ -1,11 +1,11 @@
 import React from 'react';
 
-const SearchBar = ({ onSearchTask }) => {
+const SearchBar = ({ onSearchTaskText }) => {
     return (
         <input
             type='text'
             placeholder='enter task name...'
-            onChange={e => onSearchTask(e.target.value)}
+            onChange={e => onSearchTaskText(e.target.value)}
         />
     )
 

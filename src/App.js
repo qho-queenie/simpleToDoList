@@ -17,10 +17,11 @@ const App = () => {
     const [dateInputValue, setDateInputValue] = useState('');
     const [isDateInvalid, setIsDateInvalid] = useState(false);
     const [hasTaskInputBeenTouched, setHasTaskInputBeenTouched] = useState(false);
-    const [searchText, setSearchText] = useState('');
+    const [searchTaskText, setSearchTaskText] = useState('');
 
     const isAddButtonDisabled = (!todoInputValue && hasTaskInputBeenTouched) || !todoInputValue || !dateInputValue || isDateInvalid;
     const hasCompletedItem = !todos.some(({ completed }) => completed);
+    const numOfIncompleteItem = todos.filter(({ completed }) => !completed).length;
 
     useEffect(() => {
         const storedTodos = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY_DATA));
@@ -88,9 +89,9 @@ const App = () => {
         setSortConfig(newSortConfig);
     }
 
-    const setSearchTaskText = (enteredSearchText) => {
+    const onSearchTaskText = (enteredSearchText) => {
         let cleanedSearchText = enteredSearchText.trim().toLowerCase();
-        setSearchText(enteredSearchText);
+        setSearchTaskText(enteredSearchText);
         if (cleanedSearchText.length > 0 && todos) {
             console.log([...todos])
             let searchResults = [...todos].filter(x => x.name.includes(cleanedSearchText));
@@ -139,7 +140,7 @@ const App = () => {
             <h1>A To Do List</h1>
 
             <SearchBar
-                onSearchTask={setSearchTaskText}
+                onSearchTaskText={onSearchTaskText}
             />
             <table>
                 <thead>
@@ -152,7 +153,6 @@ const App = () => {
                                 sortConfig={sortConfig}
                                 onSortColumn={onSortColumn}
                                 colName='task'
-
                             />
                         </th>
                         <th>
@@ -200,7 +200,7 @@ const App = () => {
                     Clear Selected Items
                 </button>
             </div>
-            <h3>Number of remaining to-do items: {todos.length}</h3>
+            <h3>Number of remaining to-do items: {numOfIncompleteItem}</h3>
         </div>
     )
 }
