@@ -12,12 +12,13 @@ const tomrISO = new Date().toISOString().split('T')[0];
 
 const App = () => {
     const [todos, setToDos] = useState([]);
+    const [searchText, setSearchText] = useState('');
+    const [searchResults, setSearchResults] = useState([]);
     const [sortConfig, setSortConfig] = useState({});
     const [todoInputValue, setTodoInputValue] = useState('');
     const [dateInputValue, setDateInputValue] = useState('');
     const [isDateInvalid, setIsDateInvalid] = useState(false);
     const [hasTaskInputBeenTouched, setHasTaskInputBeenTouched] = useState(false);
-    const [searchTaskText, setSearchTaskText] = useState('');
 
     const isAddButtonDisabled = (!todoInputValue && hasTaskInputBeenTouched) || !todoInputValue || !dateInputValue || isDateInvalid;
     const hasCompletedItem = !todos.some(({ completed }) => completed);
@@ -32,6 +33,11 @@ const App = () => {
     useEffect(() => {
         localStorage.setItem(LOCAL_STORAGE_KEY_DATA, JSON.stringify(todos));
     }, [todos]);
+
+    useEffect(() => {
+        const results = [...todos].filter(x => x.name.includes(searchText));
+        setSearchResults(results);
+    }, [searchText]);
 
     const handleAddItem = () => {
         const newTodoItem = {
@@ -89,17 +95,6 @@ const App = () => {
         setSortConfig(newSortConfig);
     }
 
-    const onSearchTaskText = (enteredSearchText) => {
-        let cleanedSearchText = enteredSearchText.trim().toLowerCase();
-        setSearchTaskText(enteredSearchText);
-        if (cleanedSearchText.length > 0 && todos) {
-            console.log([...todos])
-            let searchResults = [...todos].filter(x => x.name.includes(cleanedSearchText));
-            console.log('searchResults', searchResults);
-        }
-
-    }
-
     const sortTodos = () => {
         if (sortConfig) {
             let colToSort = sortConfig['columnKey'];
@@ -133,7 +128,9 @@ const App = () => {
 
     const sortedTodos = sortTodos();
 
-
+    const onSearchTaskText = searchText => {
+        setSearchText(searchText.trim().toLowerCase());
+    };
 
     return (
         <div className={'mainContent'}>
@@ -166,7 +163,9 @@ const App = () => {
                 </thead>
 
                 <tbody>
-                    <ToDoItems todos={sortedTodos} onCompleteItem={handleCompleteItem} />
+                    <ToDoItems
+
+                        todos={searchResults.length ? searchResults : sortedTodos} onCompleteItem={handleCompleteItem} />
                 </tbody>
             </table>
 
