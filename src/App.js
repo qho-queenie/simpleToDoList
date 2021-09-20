@@ -139,7 +139,6 @@ const App = () => {
     const sortedTodos = sortTodos();
 
     const onSearchTaskText = searchText => {
-        // let cleanedSearchText = searchText.trim().toLowerCase();
         setSearchText(searchText.trim().toLowerCase());
     };
 
@@ -175,9 +174,17 @@ const App = () => {
                 </thead>
 
                 <tbody>
-                    <ToDoItems
-                        todos={searchResults.length === 0 && !searchText ? sortedTodos : searchResults} onCompleteItem={handleCompleteItem} />
+                    {todos.length === 0 || todos.length > 0 && !searchText
+                        ? <ToDoItems todos={sortedTodos} onCompleteItem={handleCompleteItem} />
+                        : (searchResults.length === 0 && searchText
+                            ? <tr>
+                                <td>No search results</td>
+                            </tr>
+                            : <ToDoItems todos={searchResults} onCompleteItem={handleCompleteItem} />
+                        )
+                    }
                 </tbody>
+
             </table>
 
             <div className={'variousInputs'}>
