@@ -34,9 +34,19 @@ const App = () => {
         localStorage.setItem(LOCAL_STORAGE_KEY_DATA, JSON.stringify(todos));
     }, [todos]);
 
+    // the reason why I am using a combo of useState and useEffect for the search function is clearity:
+    // another more straight-forward way to display tasks that match the search terms is in render, directly check if there is any length to searchResults,
+    // if there is display them, if none it will just display the whole list (results with no search words entered equals the complete list)
+    // however, I would be using 'searchResults' in place of 'todos' directly. This creates confusion as to what are we displaying? 
+    // searchResults cause we are searching ? Or todos cause we are not searching
     useEffect(() => {
         const results = [...todos].filter(x => x.name.includes(searchText));
-        setSearchResults(results);
+        if (results.length > 0) {
+            setSearchResults(results);
+        }
+        else {
+            setSearchResults([]);
+        }
     }, [searchText]);
 
     const handleAddItem = () => {
@@ -129,6 +139,7 @@ const App = () => {
     const sortedTodos = sortTodos();
 
     const onSearchTaskText = searchText => {
+        // let cleanedSearchText = searchText.trim().toLowerCase();
         setSearchText(searchText.trim().toLowerCase());
     };
 
@@ -139,6 +150,7 @@ const App = () => {
             <SearchBar
                 onSearchTaskText={onSearchTaskText}
             />
+
             <table>
                 <thead>
                     <tr>
@@ -164,8 +176,7 @@ const App = () => {
 
                 <tbody>
                     <ToDoItems
-
-                        todos={searchResults.length ? searchResults : sortedTodos} onCompleteItem={handleCompleteItem} />
+                        todos={searchResults.length === 0 && !searchText ? sortedTodos : searchResults} onCompleteItem={handleCompleteItem} />
                 </tbody>
             </table>
 
