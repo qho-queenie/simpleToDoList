@@ -174,13 +174,16 @@ const App = () => {
                 </thead>
 
                 <tbody>
+                    {/* { 1: as long as there is no todos at all, or there is a todo but not searching component todoItems should handle it} */}
+                    {/* { 2: these 2 conditions must be met together to display there is no search results} */}
+                    {/* { 3: lastly, if searching and there are results, hand over the searchResults to component todoItems to handle} */}
                     {todos.length === 0 || todos.length > 0 && !searchText
                         ? <ToDoItems todos={sortedTodos} onCompleteItem={handleCompleteItem} />
                         : (searchResults.length === 0 && searchText
                             ? <tr>
                                 <td>No search results</td>
                             </tr>
-                            : <ToDoItems todos={searchResults} onCompleteItem={handleCompleteItem} />
+                            : <ToDoItems todos={searchResults} searchMode={true} searchText={searchText} onCompleteItem={handleCompleteItem} />
                         )
                     }
                 </tbody>

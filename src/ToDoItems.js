@@ -1,12 +1,18 @@
 import React from 'react';
 import ToDoItem from './ToDoItem';
 
-const ToDoItems = ({ todos, onCompleteItem }) => {
+const ToDoItems = ({ todos, onCompleteItem, searchMode, searchText }) => {
     if (todos.length > 0) {
         return (
             todos.map(item => {
                 return (
-                    <ToDoItem key={item.id} item={item} onCompleteItem={onCompleteItem} />
+                    <ToDoItem
+                        key={item.id}
+                        item={item}
+                        searchMode={searchMode}
+                        searchText={searchText}
+                        onCompleteItem={onCompleteItem}
+                    />
                 )
             })
         )
