@@ -47,7 +47,7 @@ const App = () => {
         else {
             setSearchResults([]);
         }
-    }, [searchText]);
+    }, [searchText, todos]);
 
     const handleAddItem = () => {
         const newTodoItem = {
