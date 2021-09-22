@@ -4,15 +4,18 @@ import { v4 as uuidv4 } from 'uuid';
 import ToDoItems from './ToDoItems';
 import SortableTableHeader from './SortableTableHeader';
 import SearchBar from './SearchBar';
+
 import './styles/App.scss';
 
 const LOCAL_STORAGE_KEY_DATA = 'todoApp.todos';
 
 const tomrISO = new Date().toISOString().split('T')[0];
+const todayISO = new Date().toDateString();
 
 const App = () => {
     const [todos, setToDos] = useState([]);
     const [searchText, setSearchText] = useState('');
+    const [statusMessage, setStatusMessage] = useState('Today is ' + todayISO);
     const [searchResults, setSearchResults] = useState([]);
     const [sortConfig, setSortConfig] = useState({});
     const [todoInputValue, setTodoInputValue] = useState('');
@@ -35,8 +38,9 @@ const App = () => {
     }, [todos]);
 
     // the reason why I am using a combo of useState and useEffect for the search function is clearity:
-    // another more straight-forward way to display tasks that match the search terms is in render, directly check if there is any length to searchResults,
-    // if there is display them, if none it will just display the whole list (results with no search words entered equals the complete list)
+    // another more straight-forward way is to display whatever tasks that match the search terms when there is any length to searchResults,
+    // which the display can just be a var but not the todo list itself
+    // if there is any match display them, if none it will just display the whole list (results with no search words entered equals the complete list)
     // however, I would be using 'searchResults' in place of 'todos' directly. This creates confusion as to what are we displaying? 
     // searchResults cause we are searching ? Or todos cause we are not searching
     useEffect(() => {
@@ -48,6 +52,10 @@ const App = () => {
             setSearchResults([]);
         }
     }, [searchText, todos]);
+
+    useEffect(() => {
+        setTimeout(() => setStatusMessage('Today is ' + todayISO), 5000);
+    }, [statusMessage]);
 
     const handleAddItem = () => {
         const newTodoItem = {
@@ -62,6 +70,8 @@ const App = () => {
         setTodoInputValue('');
         setDateInputValue('');
         setHasTaskInputBeenTouched(false);
+
+        setStatusMessage('A new task has been added');
     }
 
     const handleDateInputChange = (typedDateInput) => {
@@ -82,6 +92,8 @@ const App = () => {
     const handleClearItems = () => {
         const toRemainItems = todos.filter(({ completed }) => !completed);
         setToDos(toRemainItems);
+
+        setStatusMessage('Task(s) have been removed');
     }
 
     const onSortColumn = (columnToSort) => {
@@ -89,7 +101,6 @@ const App = () => {
 
         // 1. if dont exists --> destroy everything in it, create this key
         // 2. if exists -->> flip it
-
         if (sortConfig['columnKey'] !== columnToSort) {
             direction = 'asc';
         }
@@ -146,6 +157,10 @@ const App = () => {
         <div className={'mainContent'}>
             <h1>A To Do List</h1>
 
+            <p className={'statusBar'}>
+                &nbsp;{statusMessage}
+            </p>
+
             <SearchBar
                 onSearchTaskText={onSearchTaskText}
             />
@@ -174,10 +189,10 @@ const App = () => {
                 </thead>
 
                 <tbody>
-                    {/* { 1: as long as there is no todos at all, or there is a todo but not searching component todoItems should handle it} */}
-                    {/* { 2: these 2 conditions must be met together to display there is no search results} */}
+                    {/* { 1: as long as there is no todos at all, or there is a todo but not searching the component todoItems should handle it} */}
+                    {/* { 2: if there arent any search results and the user isnt searching, display there is no search results} */}
                     {/* { 3: lastly, if searching and there are results, hand over the searchResults to component todoItems to handle} */}
-                    {todos.length === 0 || todos.length > 0 && !searchText
+                    {todos.length === 0 || (todos.length > 0 && !searchText)
                         ? <ToDoItems todos={sortedTodos} onCompleteItem={handleCompleteItem} />
                         : (searchResults.length === 0 && searchText
                             ? <tr>

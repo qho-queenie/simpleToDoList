@@ -22,7 +22,6 @@ const ToDoItems = ({ todos, onCompleteItem, searchMode, searchText }) => {
                 <td>No tasks, start entering a new task below</td>
             </tr>
         )
-
     }
 }
 

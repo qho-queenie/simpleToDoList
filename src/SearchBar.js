@@ -12,5 +12,4 @@ const SearchBar = ({ onSearchTaskText }) => {
 
 }
 
-
 export default SearchBar;
