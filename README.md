@@ -1,12 +1,12 @@
 # To Do List
-	
-* Task Name
-	
-* Due Date
-	
-* Check box and clear selected tasks
-	
-* Sortable Columns
+
+- Checkbox for completion and clear selected tasks
+- Task Name: searchable and highlighted search results
+- Due Date: red text for overdue tasks
+- Sortable Columns by task and date
+
+![to do list](./src/image/1.png)
+![search by task name](./src/image/2.png)
 
 ## Available Scripts
 
