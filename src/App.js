@@ -3,14 +3,20 @@ import { v4 as uuidv4 } from 'uuid';
 
 import ToDoItems from './ToDoItems';
 import SortableTableHeader from './SortableTableHeader';
+import SearchBar from './SearchBar';
+
 import './styles/App.scss';
 
 const LOCAL_STORAGE_KEY_DATA = 'todoApp.todos';
 
 const tomrISO = new Date().toISOString().split('T')[0];
+const todayISO = new Date().toDateString();
 
 const App = () => {
     const [todos, setToDos] = useState([]);
+    const [searchText, setSearchText] = useState('');
+    const [statusMessage, setStatusMessage] = useState('Today is ' + todayISO);
+    const [searchResults, setSearchResults] = useState([]);
     const [sortConfig, setSortConfig] = useState({});
     const [todoInputValue, setTodoInputValue] = useState('');
     const [dateInputValue, setDateInputValue] = useState('');
@@ -19,6 +25,7 @@ const App = () => {
 
     const isAddButtonDisabled = (!todoInputValue && hasTaskInputBeenTouched) || !todoInputValue || !dateInputValue || isDateInvalid;
     const hasCompletedItem = !todos.some(({ completed }) => completed);
+    const numOfIncompleteItem = todos.filter(({ completed }) => !completed).length;
 
     useEffect(() => {
         const storedTodos = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY_DATA));
@@ -29,6 +36,26 @@ const App = () => {
     useEffect(() => {
         localStorage.setItem(LOCAL_STORAGE_KEY_DATA, JSON.stringify(todos));
     }, [todos]);
+
+    // the reason why I am using a combo of useState and useEffect for the search function is clearity:
+    // another more straight-forward way is to display whatever tasks that match the search terms when there is any length to searchResults,
+    // which the display can just be a var but not the todo list itself
+    // if there is any match display them, if none it will just display the whole list (results with no search words entered equals the complete list)
+    // however, I would be using 'searchResults' in place of 'todos' directly. This creates confusion as to what are we displaying? 
+    // searchResults cause we are searching ? Or todos cause we are not searching
+    useEffect(() => {
+        const results = [...todos].filter(x => x.name.includes(searchText));
+        if (results.length > 0) {
+            setSearchResults(results);
+        }
+        else {
+            setSearchResults([]);
+        }
+    }, [searchText, todos]);
+
+    useEffect(() => {
+        setTimeout(() => setStatusMessage('Today is ' + todayISO), 5000);
+    }, [statusMessage]);
 
     const handleAddItem = () => {
         const newTodoItem = {
@@ -43,6 +70,8 @@ const App = () => {
         setTodoInputValue('');
         setDateInputValue('');
         setHasTaskInputBeenTouched(false);
+
+        setStatusMessage('A new task has been added');
     }
 
     const handleDateInputChange = (typedDateInput) => {
@@ -63,6 +92,8 @@ const App = () => {
     const handleClearItems = () => {
         const toRemainItems = todos.filter(({ completed }) => !completed);
         setToDos(toRemainItems);
+
+        setStatusMessage('Task(s) have been removed');
     }
 
     const onSortColumn = (columnToSort) => {
@@ -70,7 +101,6 @@ const App = () => {
 
         // 1. if dont exists --> destroy everything in it, create this key
         // 2. if exists -->> flip it
-
         if (sortConfig['columnKey'] !== columnToSort) {
             direction = 'asc';
         }
@@ -119,9 +149,22 @@ const App = () => {
 
     const sortedTodos = sortTodos();
 
+    const onSearchTaskText = searchText => {
+        setSearchText(searchText.trim().toLowerCase());
+    };
+
     return (
         <div className={'mainContent'}>
             <h1>A To Do List</h1>
+
+            <p className={'statusBar'}>
+                &nbsp;{statusMessage}
+            </p>
+
+            <SearchBar
+                onSearchTaskText={onSearchTaskText}
+            />
+
             <table>
                 <thead>
                     <tr>
@@ -133,7 +176,6 @@ const App = () => {
                                 sortConfig={sortConfig}
                                 onSortColumn={onSortColumn}
                                 colName='task'
-
                             />
                         </th>
                         <th>
@@ -147,8 +189,20 @@ const App = () => {
                 </thead>
 
                 <tbody>
-                    <ToDoItems todos={sortedTodos} onCompleteItem={handleCompleteItem} />
+                    {/* { 1: as long as there is no todos at all, or there is a todo but not searching the component todoItems should handle it} */}
+                    {/* { 2: if there arent any search results and the user isnt searching, display there is no search results} */}
+                    {/* { 3: lastly, if searching and there are results, hand over the searchResults to component todoItems to handle} */}
+                    {todos.length === 0 || (todos.length > 0 && !searchText)
+                        ? <ToDoItems todos={sortedTodos} onCompleteItem={handleCompleteItem} />
+                        : (searchResults.length === 0 && searchText
+                            ? <tr>
+                                <td>No search results</td>
+                            </tr>
+                            : <ToDoItems todos={searchResults} searchMode={true} searchText={searchText} onCompleteItem={handleCompleteItem} />
+                        )
+                    }
                 </tbody>
+
             </table>
 
             <div className={'variousInputs'}>
@@ -181,7 +235,7 @@ const App = () => {
                     Clear Selected Items
                 </button>
             </div>
-            <h3>Number of remaining to-do items: {todos.length}</h3>
+            <h3>Number of remaining to-do items: {numOfIncompleteItem}</h3>
         </div>
     )
 }

@@ -11,6 +11,10 @@
       font-size: 50px;
     }
 
+    input {
+      text-align: center;
+    }
+
     table {
       border-collapse: collapse;
       border-radius: 25px;
@@ -87,6 +91,10 @@
     }
   }
 
+  .statusBar {
+    color: #ffff;
+  }
+
   .variousInputs {
     display: flex;
     flex-wrap: wrap;
@@ -99,10 +107,6 @@
     min-width: 335px;
     margin: 0 auto;
     padding: 10px 0;
-
-    input {
-      text-align: center;
-    }
   }
 }
 
@@ -111,7 +115,7 @@
   position: fixed;
   z-index: -1;
   display: block;
-  background-image: url('./images/monstera_bg.jpg');
+  background-color: #040f13;
   height: 885px;
   background-size: 100% 100%;
   filter: blur(5px);
